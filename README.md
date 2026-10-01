@@ -44,8 +44,8 @@
 
 ## 2.1 Аналіз аудиторії
 
-- **Промпт:** [2_1_audience_analysis_PROMPT.md](./2_1_audience_analysis_PROMPT.md)
-- **Результат:** [2_1_audience_analysis_RESULT.md](./2_1_audience_analysis_RESULT.md)
+- **Промпт:** [2_1_audience_analysis_PROMPT.md]
+- **Результат:** [2_1_audience_analysis_RESULT.md]
 
 **Що отримали:**
 
@@ -73,8 +73,8 @@
 
 ## 2.2 Ціннісна пропозиція (Value Proposition Canvas)
 
-- **Промпт:** [2_2_value_proposition_PROMPT.md](./2_2_value_proposition_PROMPT.md)
-- **Результат:** [2_2_value_proposition_RESULT.md](./2_2_value_proposition_RESULT.md)
+- **Промпт:** [2_2_value_proposition_PROMPT.md]
+- **Результат:** [2_2_value_proposition_RESULT.md]
 
 **Що отримали:**
 
@@ -118,8 +118,8 @@
 
 ## 2.3 Критичний аналіз
 
-- **Промпт:** [2_3_critical_analysis_PROMPT.md](./2_3_critical_analysis_PROMPT.md)
-- **Результат:** [2_3_critical_analysis_RESULTS.md](./2_3_critical_analysis_RESULTS.md)
+- **Промпт:** [2_3_critical_analysis_PROMPT.md]
+- **Результат:** [2_3_critical_analysis_RESULTS.md]
 
 ШІ отримав роль скептика / tech lead і перевірив висновки етапів 2.1 і 2.2.
 
