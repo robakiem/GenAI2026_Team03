@@ -2,6 +2,7 @@
 
 # Babki
 Сервіс для прозорого обліку та автоматичного розподілу спільних витрат між співмешканцями чи членами сім'ї.
+
 REQUIRMENTS: https://github.com/robakiem/GenAI2026_Team03/commit/424dd8ecbeb010cdd52ce2150d824c614cd2d98d
 
 ## Склад команди
