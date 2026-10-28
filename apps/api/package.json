@@ -1,0 +1,30 @@
+{
+  "name": "@babki/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "prisma migrate deploy",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@babki/shared": "workspace:*",
+    "@prisma/adapter-better-sqlite3": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "better-sqlite3": "12.11.1",
+    "express": "5.3.0"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.6",
+    "@types/node": "catalog:",
+    "@types/supertest": "7.2.1",
+    "prisma": "7.10.1",
+    "supertest": "7.3.1",
+    "tsx": "4.23.15",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -1,0 +1,132 @@
+// Literal copy of section 1 of prompts/4.3_technical_contracts_RESULT.md.
+// CHECK constraints (section 1.9) are written by hand into the initial migration: Prisma does not model them.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/data/generated"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum SplitMode {
+  EQUAL
+  AMOUNTS
+  PERCENTAGES
+}
+
+enum TransferState {
+  OPEN
+  REPORTED_PAID
+  CONFIRMED
+}
+
+enum ReportedVia {
+  PAYER_LINK
+  COORDINATOR
+}
+
+enum ConfirmedVia {
+  RECEIVER_LINK
+  COORDINATOR
+}
+
+model Account {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  sessions     Session[]
+  ledgers      Ledger[]
+}
+
+model Session {
+  id        String   @id
+  accountId String
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model Ledger {
+  id            String     @id @default(cuid())
+  name          String
+  coordinatorId String
+  coordinator   Account    @relation(fields: [coordinatorId], references: [id], onDelete: Restrict)
+  closedAt      DateTime?
+  createdAt     DateTime   @default(now())
+  members       Member[]
+  expenses      Expense[]
+  transfers     Transfer[]
+
+  @@index([coordinatorId])
+}
+
+model Member {
+  id             String     @id @default(cuid())
+  ledgerId       String
+  ledger         Ledger     @relation(fields: [ledgerId], references: [id], onDelete: Cascade)
+  name           String
+  nameKey        String
+  position       Int
+  isCoordinator  Boolean    @default(false)
+  paymentDetails String?
+  linkToken      String     @unique
+  createdAt      DateTime   @default(now())
+  expensesPaid   Expense[]
+  shares         Share[]
+  transfersFrom  Transfer[] @relation("TransferFrom")
+  transfersTo    Transfer[] @relation("TransferTo")
+
+  @@unique([ledgerId, nameKey])
+  @@unique([ledgerId, position])
+}
+
+model Expense {
+  id              String    @id @default(cuid())
+  ledgerId        String
+  ledger          Ledger    @relation(fields: [ledgerId], references: [id], onDelete: Cascade)
+  title           String
+  amountKopecks   Int
+  payerId         String
+  payer           Member    @relation(fields: [payerId], references: [id], onDelete: Restrict)
+  splitMode       SplitMode
+  clientRequestId String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  shares          Share[]
+
+  @@unique([ledgerId, clientRequestId])
+  @@index([ledgerId, createdAt])
+}
+
+model Share {
+  expenseId     String
+  expense       Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  memberId      String
+  member        Member  @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  amountKopecks Int
+  percentBp     Int?
+
+  @@id([expenseId, memberId])
+}
+
+model Transfer {
+  id            String        @id @default(cuid())
+  ledgerId      String
+  ledger        Ledger        @relation(fields: [ledgerId], references: [id], onDelete: Cascade)
+  fromMemberId  String
+  from          Member        @relation("TransferFrom", fields: [fromMemberId], references: [id], onDelete: Restrict)
+  toMemberId    String
+  to            Member        @relation("TransferTo", fields: [toMemberId], references: [id], onDelete: Restrict)
+  amountKopecks BigInt
+  state         TransferState @default(OPEN)
+  reportedVia   ReportedVia?
+  reportedAt    DateTime?
+  confirmedVia  ConfirmedVia?
+  confirmedAt   DateTime?
+  createdAt     DateTime      @default(now())
+
+  @@unique([ledgerId, fromMemberId, toMemberId])
+}

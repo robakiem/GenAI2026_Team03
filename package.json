@@ -1,0 +1,15 @@
+{
+  "name": "babki",
+  "private": true,
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm db:migrate && pnpm -r --parallel dev",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "build": "pnpm -r build",
+    "db:migrate": "pnpm --filter @babki/api db:migrate"
+  }
+}
