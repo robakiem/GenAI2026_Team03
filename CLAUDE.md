@@ -49,22 +49,26 @@ apps/
     prisma/migrations/    SQL migrations (CHECK constraints are written by hand)
 packages/
   shared/                 Zod schemas, types, error codes, limits and pure calculation functions used by web AND api
-docs/requirements.md      MVP requirements: user stories, Gherkin acceptance criteria
-prompts/                  prompts and their results, including the technical documents below
+docs/                     technical documentation (see section 4)
+  requirements.md         MVP requirements: user stories, Gherkin acceptance criteria
+  requirements-digest.md  entities, life cycles, business rules, assumptions
+  adr/                    architecture decisions, one file per ADR
+  technical-contracts.md  data schema, API, error format
+prompts/                  the prompts used to produce the documents and the code
 ```
 
 Dependency direction: `routes → services → data`; `web` and `api` both depend on `shared`; `shared` depends on nothing in the repo.
 
 ## 4. Sources of truth
 
-The technical documents live in **`prompts/`, not in `docs/`**. Before writing code for a story, read the relevant parts:
+All technical documents live in `docs/`. Before writing code for a story, read the relevant parts:
 
 | Question | Document |
 |---|---|
 | What must the feature do? Which scenarios? | `docs/requirements.md` (stories US-xxx, Gherkin) |
-| Business rules, forbidden actions, assumptions | `prompts/4.1_requirements_digest_RESULT.md` (BR-xx, NFR-xx, G-xx, A-xx) |
-| Stack and architecture decisions | `prompts/4.2_architecture_decisions_RESULT.md` (ADR-0001 … ADR-0006) |
-| Tables, fields, endpoints, request/response bodies, error codes | `prompts/4.3_technical_contracts_RESULT.md` (schema §1, endpoints EP-01 … EP-20 §2, error format §3, decisions CD-xx §4) |
+| Business rules, forbidden actions, assumptions | `docs/requirements-digest.md` (BR-xx, NFR-xx, G-xx, A-xx) |
+| Stack and architecture decisions | `docs/adr/` (ADR-0001 … ADR-0006, index in `docs/adr/README.md`) |
+| Tables, fields, endpoints, request/response bodies, error codes | `docs/technical-contracts.md` (schema §1, endpoints EP-01 … EP-20 §2, error format §3, decisions CD-xx §4) |
 
 If the code and the contracts disagree, the contracts win; report the mismatch.
 
@@ -106,7 +110,7 @@ If the code and the contracts disagree, the contracts win; report the mismatch.
 
 Never do the following. If a task seems to require it, stop and ask.
 
-- **Do not invent** entities, fields, tables, endpoints, error codes or UI texts with meaning. Check the contracts in `prompts/4.3_technical_contracts_RESULT.md` and the rules in `prompts/4.1_requirements_digest_RESULT.md` first; if something is missing there, report it instead of guessing.
+- **Do not invent** entities, fields, tables, endpoints, error codes or UI texts with meaning. Check the contracts in `docs/technical-contracts.md` and the rules in `docs/requirements-digest.md` first; if something is missing there, report it instead of guessing.
 - Do not change `prisma/schema.prisma` unless the contracts are changed too. Every schema change comes with a new migration in `prisma/migrations/`; never edit an applied migration. After generating one, read its SQL: if Prisma redefined a table, put the hand-written CHECK constraints back.
 - Do not use floating-point numbers, decimals or strings for money in storage, API or calculations.
 - Do not put business rules in routes, React components or the database layer; they belong to services and `packages/shared`.
@@ -120,7 +124,7 @@ Never do the following. If a task seems to require it, stop and ask.
 - Do not add a dependency, framework or service without asking the team first.
 - Do not put stack traces, SQL, file paths or library messages into an error response (contracts §3.2).
 - Do not commit `.env`, `*.db` or `apps/api/src/data/generated/`.
-- Do not edit `docs/` or the `prompts/*` files unless the task explicitly asks for it.
+- Do not edit `docs/` or `prompts/` unless the task explicitly asks for it; a change of the contracts is a team decision.
 - Do not commit or push unless the user asks.
 
 ## 7. Way of working

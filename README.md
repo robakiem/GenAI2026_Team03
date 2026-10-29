@@ -53,7 +53,7 @@ pnpm dev
 - Перевірка API і бази: http://localhost:3001/api/health (також через веб: http://localhost:5173/api/health)
 - `pnpm dev` спочатку застосовує міграції (створює локальну базу `apps/api/prisma/babki.db`, файл не комітиться), потім запускає API (порт 3001) і веб (порт 5173).
 - Тести: `pnpm test`. Перевірка типів: `pnpm typecheck`. Збірка веб-частини: `pnpm build`.
-- Структура: `apps/web` (інтерфейс), `apps/api` (API, бізнес-логіка, база), `packages/shared` (спільні типи та схеми). Схема даних і контракти API: `prompts/4.3_technical_contracts_RESULT.md`.
+- Структура: `apps/web` (інтерфейс), `apps/api` (API, бізнес-логіка, база), `packages/shared` (спільні типи та схеми). Технічна документація: [docs/](docs) — аналіз вимог, [ADR](docs/adr/README.md), [контракти](docs/technical-contracts.md) (схема даних, API, формат помилок).
 - Інструкції для ШІ-асистента (Claude Code): [CLAUDE.md](CLAUDE.md) — команди, структура, правила кодогенерації та інженерні заборони.
 
 ---
@@ -212,8 +212,7 @@ pnpm dev
 | 3.3 | Карта історій і межа MVP | [3.3_story_mapping_scope.md](prompts/3.3_story_mapping_scope.md) | [3.3_RESULT.md](prompts/3.3_RESULT.md) |
 | 3.4 | Уточнення й декомпозиція історій MVP | [3.4_story_refinement_decomposition.md](prompts/3.4_story_refinement_decomposition.md) | [3.4_RESULT.md](prompts/3.4_RESULT.md) |
 | 3.5 | Критерії приймання (чекліст і Given-When-Then) | [3.5_acceptance_criteria.md](prompts/3.5_acceptance_criteria.md) | [3.5_RESULT.md](prompts/3.5_RESULT.md) |
-| 4.1 | Технічний аналіз вимог (Requirements Digest) | [4.1_requirements_digest.md](prompts/4.1_requirements_digest.md) | [4.1_requirements_digest_RESULT.md](prompts/4.1_requirements_digest_RESULT.md) |
-| 4.2 | Архітектурні рішення (ADR) | [4.2_architecture_decisions.md](prompts/4.2_architecture_decisions.md) | [4.2_architecture_decisions_RESULT.md](prompts/4.2_architecture_decisions_RESULT.md) |
-| 4.3 | Технічні контракти: схема даних, API, формат помилок | [4.3_technical_contracts.md](prompts/4.3_technical_contracts.md) | [4.3_technical_contracts_RESULT.md](prompts/4.3_technical_contracts_RESULT.md) |
-| 4.4 | Інструкції для ШІ-асистента (AI-Harness) | — | [CLAUDE.md](CLAUDE.md) |
-| 4.5 | Крокуючий скелет (Walking Skeleton) | [4.5_walking_skeleton.md](prompts/4.5_walking_skeleton.md) | код у `apps/` і `packages/` |
+| 4.1 | Технічний аналіз вимог (Requirements Digest) | [4.1_requirements_digest.md](prompts/4.1_requirements_digest.md) | [docs/requirements-digest.md](docs/requirements-digest.md) |
+| 4.2 | Архітектурні рішення (ADR) | [4.2_adr_generation.md](prompts/4.2_adr_generation.md) | [docs/adr/](docs/adr/README.md) |
+| 4.3 | Технічні контракти: схема даних, API, формат помилок | [4.3_technical_contracts.md](prompts/4.3_technical_contracts.md) | [docs/technical-contracts.md](docs/technical-contracts.md) |
+| 4.4 | Каркас (Walking Skeleton) та інструкції для ШІ-асистента (AI-Harness) | [4.4_scaffolding_skeleton.md](prompts/4.4_scaffolding_skeleton.md) | код у `apps/` і `packages/`, [CLAUDE.md](CLAUDE.md) |
