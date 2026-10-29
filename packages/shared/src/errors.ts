@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Catalogue of error codes with their HTTP status: prompts/4.3_technical_contracts_RESULT.md, section 3.3
+// Catalogue of error codes with their HTTP status: docs/technical-contracts.md, section 3.3
 export const ERROR_STATUS = {
   VALIDATION_ERROR: 400,
   MALFORMED_JSON: 400,
