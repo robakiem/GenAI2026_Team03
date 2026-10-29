@@ -1,9 +1,9 @@
 # GenAI2026_Team03
 
 # Babki
-Сервіс для прозорого обліку та автоматичного розподілу спільних витрат між співмешканцями чи членами сім'ї.
+Вебсервіс для прозорого обліку та розподілу спільних витрат між друзями в багатоденних поїздках. Співмешканці й пари — неперевірені гіпотези для подальшого використання.
 
-REQUIRMENTS: https://github.com/robakiem/GenAI2026_Team03/commit/424dd8ecbeb010cdd52ce2150d824c614cd2d98d
+**Вимоги до MVP:** [docs/requirements.md](docs/requirements.md)
 
 ## Склад команди
 
@@ -31,6 +31,8 @@ REQUIRMENTS: https://github.com/robakiem/GenAI2026_Team03/commit/424dd8ecbeb010c
 
 ## Початкова ідея рішення
 
+> Це перша версія ідеї. Актуальний обсяг MVP — у розділі «Висновки та рішення команди» та в [docs/requirements.md](docs/requirements.md): AI-аналітику й автоматичні нагадування відкладено.
+
 Веб-застосунок для групового обліку витрат:
 - Користувачі створюють спільний "простір" (сім'я/співмешканці/поїздка) і запрошують учасників.
 - Кожен вносить витрату: сума, категорія, хто заплатив, на кого поділити.
@@ -52,6 +54,7 @@ pnpm dev
 - `pnpm dev` спочатку застосовує міграції (створює локальну базу `apps/api/prisma/babki.db`, файл не комітиться), потім запускає API (порт 3001) і веб (порт 5173).
 - Тести: `pnpm test`. Перевірка типів: `pnpm typecheck`. Збірка веб-частини: `pnpm build`.
 - Структура: `apps/web` (інтерфейс), `apps/api` (API, бізнес-логіка, база), `packages/shared` (спільні типи та схеми). Схема даних і контракти API: `prompts/4.3_technical_contracts_RESULT.md`.
+- Інструкції для ШІ-асистента (Claude Code): [CLAUDE.md](CLAUDE.md) — команди, структура, правила кодогенерації та інженерні заборони.
 
 ---
 
@@ -61,8 +64,8 @@ pnpm dev
 
 ## 2.1 Аналіз аудиторії
 
-- **Промпт:** [2_1_audience_analysis_PROMPT.md]
-- **Результат:** [2_1_audience_analysis_RESULT.md]
+- **Промпт:** [2.1_audience_analysis_PROMPT.md](prompts/2.1_audience_analysis_PROMPT.md)
+- **Результат:** [2.1_audience_analysis_RESULT.md](prompts/prompts%20results/2.1_audience_analysis_RESULT.md)
 
 **Що отримали:**
 
@@ -90,8 +93,8 @@ pnpm dev
 
 ## 2.2 Ціннісна пропозиція (Value Proposition Canvas)
 
-- **Промпт:** [2_2_value_proposition_PROMPT.md]
-- **Результат:** [2_2_value_proposition_RESULT.md]
+- **Промпт:** [2_2_value_proposition_PROMPT.md](prompts/2_2_value_proposition_PROMPT.md)
+- **Результат:** [2_2_value_proposition_RESULT.md](prompts/prompts%20results/2_2_value_proposition_RESULT.md)
 
 **Що отримали:**
 
@@ -135,8 +138,8 @@ pnpm dev
 
 ## 2.3 Критичний аналіз
 
-- **Промпт:** [2_3_critical_analysis_PROMPT.md]
-- **Результат:** [2_3_critical_analysis_RESULTS.md]
+- **Промпт:** [2.3_critical_analysis.md](prompts/2.3_critical_analysis.md)
+- **Результат:** [2.3_critical_analysis_RESULTS.md](prompts/prompts%20results/2.3_critical_analysis_RESULTS.md)
 
 ШІ отримав роль скептика / tech lead і перевірив висновки етапів 2.1 і 2.2.
 
@@ -195,3 +198,22 @@ pnpm dev
 - групи розраховуються після поїздок без проблем через чат чи таблицю;
 - більшість груп повністю на monobank або вже користуються Tricount, Settle Up чи Splid;
 - платники не долучаються.
+
+---
+
+# Етапи 3–4: вимоги та технічна основа
+
+Ці етапи також виконувалися окремими промптами. Зведені вимоги до MVP: [docs/requirements.md](docs/requirements.md).
+
+| Етап | Що зроблено | Промпт | Результат |
+|---|---|---|---|
+| 3.1 | Шлях користувача (Happy Path) Координатора | [3.1_user_journey.md](prompts/3.1_user_journey.md) | [3.1_RESULT.md](prompts/prompts%20results/3.1_RESULT.md) |
+| 3.2 | Пул чернеток історій | [3.2_story_drafts.md](prompts/3.2_story_drafts.md) | [3.2_RESULT.md](prompts/3.2_RESULT.md) |
+| 3.3 | Карта історій і межа MVP | [3.3_story_mapping_scope.md](prompts/3.3_story_mapping_scope.md) | [3.3_RESULT.md](prompts/3.3_RESULT.md) |
+| 3.4 | Уточнення й декомпозиція історій MVP | [3.4_story_refinement_decomposition.md](prompts/3.4_story_refinement_decomposition.md) | [3.4_RESULT.md](prompts/3.4_RESULT.md) |
+| 3.5 | Критерії приймання (чекліст і Given-When-Then) | [3.5_acceptance_criteria.md](prompts/3.5_acceptance_criteria.md) | [3.5_RESULT.md](prompts/3.5_RESULT.md) |
+| 4.1 | Технічний аналіз вимог (Requirements Digest) | [4.1_requirements_digest.md](prompts/4.1_requirements_digest.md) | [4.1_requirements_digest_RESULT.md](prompts/4.1_requirements_digest_RESULT.md) |
+| 4.2 | Архітектурні рішення (ADR) | [4.2_architecture_decisions.md](prompts/4.2_architecture_decisions.md) | [4.2_architecture_decisions_RESULT.md](prompts/4.2_architecture_decisions_RESULT.md) |
+| 4.3 | Технічні контракти: схема даних, API, формат помилок | [4.3_technical_contracts.md](prompts/4.3_technical_contracts.md) | [4.3_technical_contracts_RESULT.md](prompts/4.3_technical_contracts_RESULT.md) |
+| 4.4 | Інструкції для ШІ-асистента (AI-Harness) | — | [CLAUDE.md](CLAUDE.md) |
+| 4.5 | Крокуючий скелет (Walking Skeleton) | [4.5_walking_skeleton.md](prompts/4.5_walking_skeleton.md) | код у `apps/` і `packages/` |
