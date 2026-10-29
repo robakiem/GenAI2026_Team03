@@ -1,4 +1,4 @@
-// Literal copy of section 1 of prompts/4.3_technical_contracts_RESULT.md.
+// Literal copy of section 1 of docs/technical-contracts.md.
 // CHECK constraints (section 1.9) are written by hand into the initial migration: Prisma does not model them.
 
 generator client {
