@@ -13,10 +13,11 @@ export interface AppDeps {
 
 export function createApp({ pingDatabase, prisma }: AppDeps) {
   const app = express();
-  // Honour X-Forwarded-Proto behind a TLS-terminating proxy so req.secure is correct and the
-  // session cookie gets its Secure attribute over HTTPS (ADR-0005). Locally there is no such
-  // header, so req.secure stays false and the cookie still works over http://localhost.
-  app.set("trust proxy", true);
+  // Honour X-Forwarded-Proto from one TLS-terminating proxy so req.secure is correct and the
+  // session cookie gets its Secure attribute over HTTPS (ADR-0005). Trusting a single hop, not
+  // every X-Forwarded-* entry, keeps req.ip from being chosen by the client. Locally there is no
+  // such header, so req.secure stays false and the cookie still works over http://localhost.
+  app.set("trust proxy", 1);
   app.use(express.json());
 
   const ctx = { prisma };
