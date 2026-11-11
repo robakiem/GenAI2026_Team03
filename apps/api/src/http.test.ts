@@ -1,15 +1,20 @@
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { ledgerWithMembersSchema, ledgersListSchema } from "@babki/shared";
+import { accountResponseSchema, errorResponseSchema, ledgerWithMembersSchema, ledgersListSchema } from "@babki/shared";
 import { createApp } from "./app";
 import { createTestDb, type TestDb } from "./test/db";
 
 let db: TestDb;
 let app: ReturnType<typeof createApp>;
 
+// Typed views of supertest bodies (which are `any`), parsed with the shared contract schemas.
+const accountOf = (res: { body: unknown }) => accountResponseSchema.parse(res.body).account;
+const ledgerOf = (res: { body: unknown }) => ledgerWithMembersSchema.parse(res.body).ledger;
+const errorCodeOf = (res: { body: unknown }) => errorResponseSchema.parse(res.body).error.code;
+
 beforeAll(() => {
   db = createTestDb();
-  app = createApp({ prisma: db.prisma, pingDatabase: async () => {} });
+  app = createApp({ prisma: db.prisma, pingDatabase: () => Promise.resolve() });
 });
 afterAll(async () => {
   await db.cleanup();
@@ -22,16 +27,16 @@ describe("Create-a-trip epic over HTTP (EP-02…EP-09)", () => {
     // EP-02 sign up (and be signed in at once)
     const signup = await olia.post("/api/auth/signup").send({ email: "olia@example.com", password: "password1" });
     expect(signup.status).toBe(201);
-    expect(signup.body.account.email).toBe("olia@example.com");
+    expect(accountOf(signup).email).toBe("olia@example.com");
     expect(signup.headers["set-cookie"]?.[0]).toContain("babki_session=");
 
     // EP-05 me
-    expect((await olia.get("/api/auth/me")).body.account.email).toBe("olia@example.com");
+    expect(accountOf(await olia.get("/api/auth/me")).email).toBe("olia@example.com");
 
     // EP-06 create the ledger
     const created = await olia.post("/api/ledgers").send({ name: "Carpathians", coordinatorName: "Olia" });
     expect(created.status).toBe(201);
-    const ledgerId = created.body.ledger.id as string;
+    const ledgerId = ledgerOf(created).id;
 
     // EP-09 add the three friends
     for (const name of ["Max", "Iryna", "Andrii"]) {
@@ -55,19 +60,19 @@ describe("Create-a-trip epic over HTTP (EP-02…EP-09)", () => {
   it("refuses an unauthenticated request with 401", async () => {
     const res = await request(app).get("/api/ledgers");
     expect(res.status).toBe(401);
-    expect(res.body.error.code).toBe("UNAUTHENTICATED");
+    expect(errorCodeOf(res)).toBe("UNAUTHENTICATED");
   });
 
   it("hides another Coordinator's ledger as 404", async () => {
     const olia = request.agent(app);
     await olia.post("/api/auth/signup").send({ email: "olia2@example.com", password: "password1" });
-    const ledgerId = (await olia.post("/api/ledgers").send({ name: "Trip", coordinatorName: "Olia" })).body.ledger.id;
+    const ledgerId = ledgerOf(await olia.post("/api/ledgers").send({ name: "Trip", coordinatorName: "Olia" })).id;
 
     const max = request.agent(app);
     await max.post("/api/auth/signup").send({ email: "max2@example.com", password: "password1" });
     const res = await max.get(`/api/ledgers/${ledgerId}`);
     expect(res.status).toBe(404);
-    expect(res.body.error.code).toBe("LEDGER_NOT_FOUND");
+    expect(errorCodeOf(res)).toBe("LEDGER_NOT_FOUND");
   });
 
   it("refuses a blank ledger name and a duplicate member name", async () => {
@@ -75,13 +80,13 @@ describe("Create-a-trip epic over HTTP (EP-02…EP-09)", () => {
     await olia.post("/api/auth/signup").send({ email: "olia3@example.com", password: "password1" });
     const blank = await olia.post("/api/ledgers").send({ name: "   ", coordinatorName: "Olia" });
     expect(blank.status).toBe(400);
-    expect(blank.body.error.code).toBe("VALIDATION_ERROR");
+    expect(errorCodeOf(blank)).toBe("VALIDATION_ERROR");
 
-    const ledgerId = (await olia.post("/api/ledgers").send({ name: "Trip", coordinatorName: "Olia" })).body.ledger.id;
+    const ledgerId = ledgerOf(await olia.post("/api/ledgers").send({ name: "Trip", coordinatorName: "Olia" })).id;
     await olia.post(`/api/ledgers/${ledgerId}/members`).send({ name: "Max" });
     const dup = await olia.post(`/api/ledgers/${ledgerId}/members`).send({ name: "max" });
     expect(dup.status).toBe(409);
-    expect(dup.body.error.code).toBe("MEMBER_NAME_TAKEN");
+    expect(errorCodeOf(dup)).toBe("MEMBER_NAME_TAKEN");
   });
 
   it("keeps the trip after sign-out and sign-in (data persists)", async () => {

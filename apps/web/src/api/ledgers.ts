@@ -34,8 +34,8 @@ export function useAddMember(ledgerId: string) {
       apiPost(`/api/ledgers/${ledgerId}/members`, body, memberCreatedSchema),
     onSuccess: () => {
       // Never show a stale member list (BR-26).
-      queryClient.invalidateQueries({ queryKey: ["ledger", ledgerId] });
-      queryClient.invalidateQueries({ queryKey: ["ledgers"] });
+      void queryClient.invalidateQueries({ queryKey: ["ledger", ledgerId] });
+      void queryClient.invalidateQueries({ queryKey: ["ledgers"] });
     },
   });
 }

@@ -18,7 +18,7 @@ export function LedgerNewPage() {
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    createLedger.mutate({ name, coordinatorName }, { onSuccess: (data) => navigate(`/ledgers/${data.ledger.id}`) });
+    createLedger.mutate({ name, coordinatorName }, { onSuccess: (data) => void navigate(`/ledgers/${data.ledger.id}`) });
   }
 
   return (

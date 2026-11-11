@@ -25,13 +25,18 @@ export const notFoundHandler: RequestHandler = (_req, _res, next) => {
   next(new AppError("NOT_FOUND", "Route not found."));
 };
 
+// body-parser reports malformed JSON as an error carrying type "entity.parse.failed".
+function isBodyParseError(err: unknown): boolean {
+  return typeof err === "object" && err !== null && "type" in err && err.type === "entity.parse.failed";
+}
+
 // Express 4 arguments are required for Express to recognise an error handler
 export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   if (err instanceof AppError) {
     res.status(ERROR_STATUS[err.code]).json(toResponse(err.code, err.message, err.params, err.details));
     return;
   }
-  if (err?.type === "entity.parse.failed") {
+  if (isBodyParseError(err)) {
     res.status(ERROR_STATUS.MALFORMED_JSON).json(toResponse("MALFORMED_JSON", "Request body is not valid JSON."));
     return;
   }

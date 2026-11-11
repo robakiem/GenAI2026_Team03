@@ -10,12 +10,10 @@ let databaseDown: ReturnType<typeof createApp>;
 
 beforeAll(() => {
   db = createTestDb();
-  databaseUp = createApp({ prisma: db.prisma, pingDatabase: async () => {} });
+  databaseUp = createApp({ prisma: db.prisma, pingDatabase: () => Promise.resolve() });
   databaseDown = createApp({
     prisma: db.prisma,
-    pingDatabase: async () => {
-      throw new Error("no such file");
-    },
+    pingDatabase: () => Promise.reject(new Error("no such file")),
   });
 });
 

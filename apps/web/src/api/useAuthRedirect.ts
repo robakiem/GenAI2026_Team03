@@ -7,7 +7,7 @@ export function useAuthRedirect(error: unknown): void {
   const navigate = useNavigate();
   useEffect(() => {
     if (error instanceof ApiError && error.status === 401) {
-      navigate("/signin", { replace: true });
+      void navigate("/signin", { replace: true });
     }
   }, [error, navigate]);
 }

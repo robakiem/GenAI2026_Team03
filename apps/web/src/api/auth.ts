@@ -21,7 +21,7 @@ export function useSignUp() {
     mutationFn: (body: Credentials) => apiPost("/api/auth/signup", body, accountResponseSchema),
     onSuccess: (data) => {
       queryClient.setQueryData(["me"], data);
-      queryClient.invalidateQueries({ queryKey: ["ledgers"] });
+      void queryClient.invalidateQueries({ queryKey: ["ledgers"] });
     },
   });
 }
@@ -32,7 +32,7 @@ export function useSignIn() {
     mutationFn: (body: Credentials) => apiPost("/api/auth/signin", body, accountResponseSchema),
     onSuccess: (data) => {
       queryClient.setQueryData(["me"], data);
-      queryClient.invalidateQueries({ queryKey: ["ledgers"] });
+      void queryClient.invalidateQueries({ queryKey: ["ledgers"] });
     },
   });
 }

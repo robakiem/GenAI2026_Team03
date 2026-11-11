@@ -15,7 +15,7 @@ export function SignInPage() {
         submitLabel={uk.auth.signInButton}
         pending={signIn.isPending}
         error={signIn.error}
-        onSubmit={(credentials) => signIn.mutate(credentials, { onSuccess: () => navigate("/ledgers") })}
+        onSubmit={(credentials) => signIn.mutate(credentials, { onSuccess: () => void navigate("/ledgers") })}
         footer={
           <Link to="/signup" className="font-medium text-emerald-700 hover:underline">
             {uk.auth.toSignUp}

@@ -52,7 +52,7 @@ pnpm dev
 - Веб-застосунок: http://localhost:5173
 - Перевірка API і бази: http://localhost:3001/api/health (також через веб: http://localhost:5173/api/health)
 - `pnpm dev` спочатку застосовує міграції (створює локальну базу `apps/api/prisma/babki.db`, файл не комітиться), потім запускає API (порт 3001) і веб (порт 5173).
-- Тести: `pnpm test`. Перевірка типів: `pnpm typecheck`. Збірка веб-частини: `pnpm build`.
+- Тести: `pnpm test`. Перевірка типів: `pnpm typecheck`. Лінтер: `pnpm lint`. Усі перевірки разом: `pnpm check`. Збірка веб-частини: `pnpm build`.
 - Структура: `apps/web` (інтерфейс), `apps/api` (API, бізнес-логіка, база), `packages/shared` (спільні типи та схеми). Технічна документація: [docs/](docs) — аналіз вимог, [ADR](docs/adr/README.md), [контракти](docs/technical-contracts.md) (схема даних, API, формат помилок).
 - Інструкції для ШІ-асистента (Claude Code): [CLAUDE.md](CLAUDE.md) — команди, структура, правила кодогенерації та інженерні заборони.
 

@@ -23,7 +23,7 @@ export function LedgersPage() {
         <Button
           variant="ghost"
           className="px-3 py-1.5"
-          onClick={() => signOut.mutate(undefined, { onSuccess: () => navigate("/signin") })}
+          onClick={() => signOut.mutate(undefined, { onSuccess: () => void navigate("/signin") })}
         >
           {uk.auth.signOutButton}
         </Button>
@@ -31,7 +31,7 @@ export function LedgersPage() {
     >
       <h1 className="text-2xl font-bold tracking-tight text-slate-900">{uk.ledgers.title}</h1>
 
-      <Button className="mt-4 w-full" onClick={() => navigate("/ledgers/new")}>
+      <Button className="mt-4 w-full" onClick={() => void navigate("/ledgers/new")}>
         <PlusIcon className="h-5 w-5" />
         {uk.ledgers.create}
       </Button>

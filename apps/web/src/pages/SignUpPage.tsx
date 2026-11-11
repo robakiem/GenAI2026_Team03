@@ -16,7 +16,7 @@ export function SignUpPage() {
         pending={signUp.isPending}
         error={signUp.error}
         showPasswordHint
-        onSubmit={(credentials) => signUp.mutate(credentials, { onSuccess: () => navigate("/ledgers") })}
+        onSubmit={(credentials) => signUp.mutate(credentials, { onSuccess: () => void navigate("/ledgers") })}
         footer={
           <Link to="/signin" className="font-medium text-emerald-700 hover:underline">
             {uk.auth.toSignIn}
