@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { z } from "zod";
 import { addMemberSchema, createLedgerSchema, signUpSchema } from "@babki/shared";
 import { AppError } from "./errors";
 import { parseBody } from "./validation";
@@ -44,6 +45,17 @@ describe("member name validation (US-005)", () => {
   it("reports a missing name as REQUIRED", () => {
     const error = catchError(() => parseBody(addMemberSchema, {}));
     expect(error.details?.[0]?.code).toBe("REQUIRED");
+  });
+});
+
+describe("integer fields (contracts 2.1, 3.4)", () => {
+  const amountSchema = z.object({ amountKopecks: z.number().int() });
+
+  it("reports a fractional amount as NOT_AN_INTEGER and a string as INVALID_TYPE", () => {
+    const fraction = catchError(() => parseBody(amountSchema, { amountKopecks: 150.5 }));
+    expect(fraction.details?.[0]).toMatchObject({ field: "amountKopecks", code: "NOT_AN_INTEGER" });
+    const text = catchError(() => parseBody(amountSchema, { amountKopecks: "150" }));
+    expect(text.details?.[0]).toMatchObject({ field: "amountKopecks", code: "INVALID_TYPE" });
   });
 });
 

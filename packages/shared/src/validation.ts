@@ -24,7 +24,9 @@ function formatPath(path: ReadonlyArray<PropertyKey>): string {
 function detailCode(issue: Issue, input: unknown): ValidationDetailCode {
   switch (issue.code) {
     case "invalid_type":
-      return valueAtPath(input, issue.path) === undefined ? "REQUIRED" : "INVALID_TYPE";
+      if (valueAtPath(input, issue.path) === undefined) return "REQUIRED";
+      // Zod 4 reports a failed .int() (e.g. 150.5) as invalid_type with expected "int".
+      return issue.expected === "int" ? "NOT_AN_INTEGER" : "INVALID_TYPE";
     case "too_small":
       if (issue.origin === "number") return "OUT_OF_RANGE";
       if (issue.origin === "array") return "TOO_FEW_ITEMS";
