@@ -45,6 +45,8 @@ export const VALIDATION_DETAIL_CODES = [
   "DUPLICATE_ITEM",
 ] as const;
 
+export type ValidationDetailCode = (typeof VALIDATION_DETAIL_CODES)[number];
+
 export const validationDetailSchema = z.object({
   field: z.string(),
   code: z.enum(VALIDATION_DETAIL_CODES),

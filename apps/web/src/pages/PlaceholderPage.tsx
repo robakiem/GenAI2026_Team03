@@ -1,13 +1,18 @@
 import { Link } from "react-router";
+import { AppShell } from "../components/AppShell";
+import { buttonClass } from "../components/ui/Button";
 import { uk, type ScreenKey } from "../i18n/uk";
 
 export function PlaceholderPage({ screen }: { screen: ScreenKey }) {
   return (
-    <main className="mx-auto max-w-md px-4 py-6">
-      <h1 className="text-2xl font-semibold break-words">{uk.screens[screen]}</h1>
-      <Link to="/" className="mt-4 inline-block text-blue-700 underline">
-        {uk.app.home}
-      </Link>
-    </main>
+    <AppShell>
+      <div className="py-14 text-center">
+        <h1 className="text-xl font-semibold text-slate-900">{uk.screens[screen]}</h1>
+        {screen === "linkNotFound" ? null : <p className="mt-2 text-slate-500">{uk.common.soon}</p>}
+        <Link to="/" className={buttonClass("secondary", "mt-6")}>
+          {uk.app.home}
+        </Link>
+      </div>
+    </AppShell>
   );
 }

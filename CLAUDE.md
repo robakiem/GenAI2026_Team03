@@ -20,13 +20,15 @@ Prerequisites: Node.js 24 (`.nvmrc`), pnpm (`corepack enable` if missing). Run e
 | `pnpm dev` | applies migrations, then starts API (http://localhost:3001) and web (http://localhost:5173) in parallel |
 | `pnpm test` | Vitest in every package (API: Vitest + Supertest) |
 | `pnpm typecheck` | `tsc --noEmit` in every package |
+| `pnpm lint` | ESLint (typescript-eslint type-aware rules, React hooks rules) over the whole repository |
+| `pnpm check` | `typecheck` + `lint` + `test` + `build`: the full deterministic gate |
 | `pnpm build` | production build of the web app |
 | `pnpm db:migrate` | applies pending migrations (`prisma migrate deploy`) to `apps/api/prisma/babki.db` |
 | `pnpm --filter @babki/api <script>` | runs a script in one package (`@babki/api`, `@babki/web`, `@babki/shared`) |
 
 Health check: `GET http://localhost:3001/api/health` (also through the web proxy at http://localhost:5173/api/health).
 
-Before saying a task is done, run `pnpm typecheck` and `pnpm test`; for UI changes also `pnpm build`. Report failures, never hide them.
+Before saying a task is done, run `pnpm typecheck`, `pnpm lint` and `pnpm test`; for UI changes also `pnpm build` (or just `pnpm check`). Fix the cause of a lint error; never silence it with `eslint-disable` or `as any`. Report failures, never hide them.
 
 ## 3. Structure
 
@@ -131,5 +133,5 @@ Never do the following. If a task seems to require it, stop and ask.
 
 1. For any change beyond a few lines: read the story and its contracts, then present a short plan (files to touch, endpoints, tests) and wait for approval.
 2. Implement in layer order: `shared` → `data` → `services` → `routes` → `web`, with tests next to the code.
-3. Run `pnpm typecheck` and `pnpm test` (and `pnpm build` for the web) before reporting.
+3. Run `pnpm typecheck`, `pnpm lint` and `pnpm test` (and `pnpm build` for the web) before reporting.
 4. In the report, list the changed files, the rules (BR-xx / EP-xx) covered, and anything not verified.

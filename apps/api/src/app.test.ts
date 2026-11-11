@@ -1,13 +1,24 @@
 import request from "supertest";
-import { describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { errorResponseSchema, healthResponseSchema } from "@babki/shared";
 import { createApp } from "./app";
+import { createTestDb, type TestDb } from "./test/db";
 
-const databaseUp = createApp({ pingDatabase: async () => {} });
-const databaseDown = createApp({
-  pingDatabase: async () => {
-    throw new Error("no such file");
-  },
+let db: TestDb;
+let databaseUp: ReturnType<typeof createApp>;
+let databaseDown: ReturnType<typeof createApp>;
+
+beforeAll(() => {
+  db = createTestDb();
+  databaseUp = createApp({ prisma: db.prisma, pingDatabase: () => Promise.resolve() });
+  databaseDown = createApp({
+    prisma: db.prisma,
+    pingDatabase: () => Promise.reject(new Error("no such file")),
+  });
+});
+
+afterAll(async () => {
+  await db.cleanup();
 });
 
 describe("GET /api/health", () => {
