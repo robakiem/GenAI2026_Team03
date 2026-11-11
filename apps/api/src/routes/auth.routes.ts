@@ -1,8 +1,9 @@
 import { Router } from "express";
 import type { RequestHandler } from "express";
-import { signInSchema, signUpSchema, type Account as AccountDto } from "@babki/shared";
+import { signInSchema, signUpSchema } from "@babki/shared";
 import type { ServiceContext } from "../context";
 import { clearSessionCookie, readSessionCookie, setSessionCookie } from "../cookies";
+import { currentAccount } from "../middleware";
 import * as authService from "../services/auth.service";
 import { parseBody } from "../validation";
 
@@ -31,7 +32,7 @@ export function authRouter(ctx: ServiceContext, requireCoordinator: RequestHandl
   });
 
   router.get("/me", requireCoordinator, (_req, res) => {
-    res.json({ account: res.locals.account as AccountDto });
+    res.json({ account: currentAccount(res) });
   });
 
   return router;

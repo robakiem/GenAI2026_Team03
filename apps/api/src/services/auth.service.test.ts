@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { ServiceContext } from "../context";
+import type { PrismaClient } from "../data/generated/client";
 import { AppError } from "../errors";
 import { createTestDb, type TestDb } from "../test/db";
 import * as authService from "./auth.service";
@@ -65,6 +66,23 @@ describe("AuthService", () => {
 
     await db.prisma.session.update({ where: { id: session.id }, data: { expiresAt: new Date(Date.now() - 1000) } });
     expect(await authService.authenticate(ctx(), session.id)).toBeNull();
+  });
+
+  it("treats a session signed out during the check as missing, not as an error", async () => {
+    const { session } = await authService.signUp(ctx(), { email: "olia@example.com", password: "password1" });
+    // Delete the session right after authenticate has read it, as a parallel sign-out request would.
+    const racing = db.prisma.$extends({
+      query: {
+        session: {
+          async findUnique({ args, query }) {
+            const found = await query(args);
+            await db.prisma.session.deleteMany({ where: { id: session.id } });
+            return found;
+          },
+        },
+      },
+    });
+    expect(await authService.authenticate({ prisma: racing as unknown as PrismaClient }, session.id)).toBeNull();
   });
 
   it("signs out idempotently", async () => {

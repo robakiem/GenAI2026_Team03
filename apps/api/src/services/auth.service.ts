@@ -71,15 +71,17 @@ export async function signOut(ctx: ServiceContext, sessionId: string | undefined
 export async function authenticate(
   ctx: ServiceContext,
   sessionId: string | undefined,
-): Promise<{ account: AccountDto; expiresAt: Date } | null> {
+): Promise<{ account: AccountDto; sessionId: string; expiresAt: Date } | null> {
   if (!sessionId) return null;
   const session = await sessions.findSessionWithAccount(ctx.prisma, sessionId);
   if (!session) return null;
-  if (session.expiresAt.getTime() <= Date.now()) {
+  const now = new Date();
+  if (session.expiresAt <= now) {
     await sessions.deleteSessionById(ctx.prisma, sessionId);
     return null;
   }
-  const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
-  await sessions.updateSessionExpiry(ctx.prisma, sessionId, expiresAt);
-  return { account: toAccountDto(session.account), expiresAt };
+  const expiresAt = new Date(now.getTime() + SESSION_TTL_MS);
+  const { count } = await sessions.extendSession(ctx.prisma, sessionId, now, expiresAt);
+  if (count === 0) return null;
+  return { account: toAccountDto(session.account), sessionId, expiresAt };
 }
