@@ -4,6 +4,7 @@ import type { ServiceContext } from "../context";
 import * as ledgers from "../data/ledgers";
 import * as members from "../data/members";
 import { uniqueViolationTarget } from "../data/prisma-error";
+import * as transfers from "../data/transfers";
 import { AppError } from "../errors";
 import { toMemberDto } from "./mappers";
 import { newLinkToken } from "./tokens";
@@ -26,7 +27,7 @@ export async function addMember(
       throw new AppError("LEDGER_CLOSED", "The ledger is closed; members cannot be added.");
     }
     // Freeze: no member may be added once settlement has started (contracts 1.9, BR-36).
-    if ((await members.countTransfersByLedger(tx, input.ledgerId)) > 0) {
+    if ((await transfers.ledgerIdsWithTransfers(tx, [input.ledgerId])).has(input.ledgerId)) {
       throw new AppError("SETTLEMENT_STARTED", "Members cannot be added after the first transfer was reported as paid.");
     }
     const count = await members.countMembersByLedger(tx, input.ledgerId);

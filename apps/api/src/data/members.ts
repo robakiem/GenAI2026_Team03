@@ -18,7 +18,3 @@ export function countMembersByLedger(db: Db, ledgerId: string) {
 export function findMemberByNameKey(db: Db, ledgerId: string, nameKey: string) {
   return db.member.findUnique({ where: { ledgerId_nameKey: { ledgerId, nameKey } } });
 }
-
-export function countTransfersByLedger(db: Db, ledgerId: string) {
-  return db.transfer.count({ where: { ledgerId } });
-}

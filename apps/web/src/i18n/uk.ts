@@ -2,10 +2,8 @@
 export const uk = {
   app: {
     name: "Babki",
-    tagline: "Облік спільних витрат для подорожей з друзями",
     heroTitle: "Спільні витрати поїздки — під контролем",
     heroLead: "Створіть поїздку, додайте друзів і тримайте всі витрати та борги в одному місці.",
-    getStarted: "Почати",
     screensTitle: "Екрани (демо-навігація)",
     home: "На головну",
   },
@@ -43,7 +41,6 @@ export const uk = {
     title: "Мої поїздки",
     empty: "У вас ще немає поїздок.",
     create: "Створити поїздку",
-    open: "Відкрити",
   },
   ledgerNew: {
     title: "Нова поїздка",
@@ -61,7 +58,6 @@ export const uk = {
     memberNameLabel: "Ім'я друга",
     memberNamePlaceholder: "Наприклад, Макс",
     addButton: "Додати",
-    linkLabel: "Персональне посилання",
     copyLink: "Копіювати",
     copied: "Скопійовано",
     notFound: "Поїздку не знайдено.",
@@ -89,4 +85,3 @@ export const uk = {
 } as const;
 
 export type ScreenKey = keyof typeof uk.screens;
-export type ErrorTextKey = keyof typeof uk.errors;

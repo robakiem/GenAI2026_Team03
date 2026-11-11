@@ -3,6 +3,7 @@ import type { LedgersList, LedgerWithMembers } from "@babki/shared";
 import type { ServiceContext } from "../context";
 import * as ledgers from "../data/ledgers";
 import * as members from "../data/members";
+import * as transfers from "../data/transfers";
 import { AppError } from "../errors";
 import { toLedgerDto, toMemberDto } from "./mappers";
 import { newLinkToken } from "./tokens";
@@ -30,8 +31,9 @@ export async function createLedger(
 // EP-07: the Coordinator's own trips only.
 export async function listLedgers(ctx: ServiceContext, accountId: string): Promise<LedgersList> {
   const rows = await ledgers.listLedgersByCoordinator(ctx.prisma, accountId);
-  const withTransfers = new Set(
-    (await ledgers.ledgerIdsWithTransfers(ctx.prisma, rows.map((row) => row.id))).map((row) => row.ledgerId),
+  const withTransfers = await transfers.ledgerIdsWithTransfers(
+    ctx.prisma,
+    rows.map((row) => row.id),
   );
   return { ledgers: rows.map((row) => toLedgerDto(row, withTransfers.has(row.id))) };
 }
@@ -46,9 +48,9 @@ export async function getLedger(
   if (!ledger) {
     throw new AppError("LEDGER_NOT_FOUND", "Ledger not found.");
   }
-  const [memberRows, transferCount] = await Promise.all([
+  const [memberRows, withTransfers] = await Promise.all([
     members.listMembersByLedger(ctx.prisma, input.ledgerId),
-    members.countTransfersByLedger(ctx.prisma, input.ledgerId),
+    transfers.ledgerIdsWithTransfers(ctx.prisma, [input.ledgerId]),
   ]);
-  return { ledger: toLedgerDto(ledger, transferCount > 0), members: memberRows.map(toMemberDto) };
+  return { ledger: toLedgerDto(ledger, withTransfers.has(ledger.id)), members: memberRows.map(toMemberDto) };
 }
