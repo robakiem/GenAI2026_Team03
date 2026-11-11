@@ -48,6 +48,30 @@ describe("member name validation (US-005)", () => {
   });
 });
 
+describe("limits at their boundaries (contracts 2.1)", () => {
+  const passwordOf = (length: number) => parseBody(signUpSchema, { email: "olia@example.com", password: name(length) });
+  // 64 + 1 + 60 + 1 + 60 + 1 + 63 + ".com" = 254 characters; ".comm" makes 255.
+  const emailOf = (tld: string) => `${name(64)}@${"b".repeat(60)}.${"c".repeat(60)}.${"d".repeat(63)}.${tld}`;
+
+  it("accepts a ledger, Coordinator and member name of 1 character", () => {
+    expect(parseBody(createLedgerSchema, { name: "K", coordinatorName: "O" })).toEqual({ name: "K", coordinatorName: "O" });
+    expect(parseBody(addMemberSchema, { name: "M" }).name).toBe("M");
+  });
+
+  it("accepts a password of 8 and 128 characters, refuses 7 and 129", () => {
+    expect(passwordOf(8).password).toHaveLength(8);
+    expect(passwordOf(128).password).toHaveLength(128);
+    expect(catchError(() => passwordOf(7)).details?.[0]).toMatchObject({ field: "password", code: "TOO_SHORT" });
+    expect(catchError(() => passwordOf(129)).details?.[0]).toMatchObject({ field: "password", code: "TOO_LONG" });
+  });
+
+  it("accepts an e-mail of 254 characters, refuses 255", () => {
+    expect(parseBody(signUpSchema, { email: emailOf("com"), password: "password1" }).email).toHaveLength(254);
+    const error = catchError(() => parseBody(signUpSchema, { email: emailOf("comm"), password: "password1" }));
+    expect(error.details).toContainEqual(expect.objectContaining({ field: "email", code: "TOO_LONG" }));
+  });
+});
+
 describe("integer fields (contracts 2.1, 3.4)", () => {
   const amountSchema = z.object({ amountKopecks: z.number().int() });
 

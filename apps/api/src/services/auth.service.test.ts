@@ -49,6 +49,16 @@ describe("AuthService", () => {
     expect(unknownEmail.code).toBe("INVALID_CREDENTIALS");
   });
 
+  it("gives the same code and message for a wrong e-mail and a wrong password", async () => {
+    await authService.signUp(ctx(), { email: "olia@example.com", password: "password1" });
+    const wrongPassword = await expectError(authService.signIn(ctx(), { email: "olia@example.com", password: "nope12345" }));
+    const unknownEmail = await expectError(authService.signIn(ctx(), { email: "ghost@example.com", password: "password1" }));
+    expect({ code: unknownEmail.code, message: unknownEmail.message }).toEqual({
+      code: wrongPassword.code,
+      message: wrongPassword.message,
+    });
+  });
+
   it("checks every character of a long Cyrillic password", async () => {
     // 40 Cyrillic letters are 80 UTF-8 bytes, beyond the 72 bytes bcrypt reads by itself.
     const start = "ж".repeat(36);

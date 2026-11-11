@@ -89,6 +89,53 @@ describe("Create-a-trip epic over HTTP (EP-02…EP-09)", () => {
     expect(errorCodeOf(dup)).toBe("MEMBER_NAME_TAKEN");
   });
 
+  it("sets the session cookie HttpOnly, SameSite=Lax, Path=/ for 30 days", async () => {
+    const res = await request(app).post("/api/auth/signup").send({ email: "olia5@example.com", password: "password1" });
+    const cookie = res.headers["set-cookie"]?.[0] ?? "";
+    expect(cookie).toMatch(/^babki_session=[^;]+;/);
+    expect(cookie).toContain("Path=/");
+    expect(cookie).toContain("HttpOnly");
+    expect(cookie).toContain("SameSite=Lax");
+    const expires = Date.parse(/Expires=([^;]+)/.exec(cookie)?.[1] ?? "");
+    const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+    expect(Math.abs(expires - (Date.now() + thirtyDays))).toBeLessThan(60_000);
+  });
+
+  it("refuses every Coordinator endpoint without a session (401)", async () => {
+    const anonymous = request(app);
+    const responses = [
+      await anonymous.get("/api/auth/me"),
+      await anonymous.post("/api/ledgers").send({ name: "Trip", coordinatorName: "Olia" }),
+      await anonymous.get("/api/ledgers"),
+      await anonymous.get("/api/ledgers/some-ledger"),
+      await anonymous.post("/api/ledgers/some-ledger/members").send({ name: "Max" }),
+    ];
+    for (const res of responses) {
+      expect(res.status).toBe(401);
+      expect(errorCodeOf(res)).toBe("UNAUTHENTICATED");
+    }
+  });
+
+  it("answers a wrong e-mail and a wrong password with the same body", async () => {
+    await request(app).post("/api/auth/signup").send({ email: "olia6@example.com", password: "password1" });
+    const wrongPassword = await request(app).post("/api/auth/signin").send({ email: "olia6@example.com", password: "nope12345" });
+    const unknownEmail = await request(app).post("/api/auth/signin").send({ email: "ghost6@example.com", password: "password1" });
+    expect(wrongPassword.status).toBe(401);
+    expect(unknownEmail.status).toBe(401);
+    expect(unknownEmail.body).toEqual(wrongPassword.body);
+  });
+
+  it("A blank or too long name is refused: no ledger is created", async () => {
+    const olia = request.agent(app);
+    await olia.post("/api/auth/signup").send({ email: "olia7@example.com", password: "password1" });
+    for (const name of ["", "   ", "x".repeat(61)]) {
+      const res = await olia.post("/api/ledgers").send({ name, coordinatorName: "Olia" });
+      expect(res.status).toBe(400);
+      expect(errorCodeOf(res)).toBe("VALIDATION_ERROR");
+    }
+    expect(ledgersListSchema.parse((await olia.get("/api/ledgers")).body).ledgers).toHaveLength(0);
+  });
+
   it("keeps the trip after sign-out and sign-in (data persists)", async () => {
     const olia = request.agent(app);
     await olia.post("/api/auth/signup").send({ email: "olia4@example.com", password: "password1" });
