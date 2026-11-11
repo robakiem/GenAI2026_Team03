@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { readFileSync, rmSync } from "node:fs";
+import { readdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -7,10 +7,13 @@ import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import Database from "better-sqlite3";
 import { PrismaClient } from "../data/generated/client";
 
-const migrationSql = readFileSync(
-  fileURLToPath(new URL("../../prisma/migrations/20261028174832_init/migration.sql", import.meta.url)),
-  "utf8",
-);
+// Every migration in name (= timestamp) order: the same schema `pnpm db:migrate` builds.
+const migrationsDir = fileURLToPath(new URL("../../prisma/migrations/", import.meta.url));
+const migrations = readdirSync(migrationsDir, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name)
+  .sort()
+  .map((name) => readFileSync(join(migrationsDir, name, "migration.sql"), "utf8"));
 
 export interface TestDb {
   prisma: PrismaClient;
@@ -23,7 +26,7 @@ export function createTestDb(): TestDb {
   const file = join(tmpdir(), `babki-test-${randomUUID()}.db`);
   const raw = new Database(file);
   raw.pragma("foreign_keys = ON");
-  raw.exec(migrationSql);
+  for (const sql of migrations) raw.exec(sql);
   raw.close();
 
   const prisma = new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: `file:${file}` }) });
