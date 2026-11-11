@@ -10,3 +10,6 @@ dist/
 
 # generated Prisma client
 apps/api/src/data/generated/
+
+# personal Claude Code settings (the shared .claude/ files are committed)
+.claude/settings.local.json
