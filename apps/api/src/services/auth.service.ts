@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import bcrypt from "bcryptjs";
 import type { Account as AccountDto } from "@babki/shared";
 import type { ServiceContext } from "../context";
@@ -10,9 +11,15 @@ import { newSessionId } from "./tokens";
 
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days (A-09, ADR-0005)
 const BCRYPT_COST = 10;
+
+// bcrypt reads only the first 72 bytes, while a password may have 128 characters (up to 512
+// UTF-8 bytes; a Cyrillic letter takes 2). Hashing it first to 44 base64 characters keeps
+// every character significant.
+const prehash = (password: string): string => createHash("sha256").update(password, "utf8").digest("base64");
+
 // Compared against when the e-mail is unknown, so sign-in takes a similar time whether or
 // not an account exists (no timing oracle on which field was wrong, ADR-0005).
-const DUMMY_HASH = bcrypt.hashSync("babki-dummy-password", BCRYPT_COST);
+const DUMMY_HASH = bcrypt.hashSync(prehash("babki-dummy-password"), BCRYPT_COST);
 
 export interface SessionInfo {
   id: string;
@@ -30,7 +37,7 @@ export async function signUp(
   ctx: ServiceContext,
   input: { email: string; password: string },
 ): Promise<{ account: AccountDto; session: SessionInfo }> {
-  const passwordHash = await bcrypt.hash(input.password, BCRYPT_COST);
+  const passwordHash = await bcrypt.hash(prehash(input.password), BCRYPT_COST);
   const account = await accounts.insertAccount(ctx.prisma, { email: input.email, passwordHash }).catch((error) => {
     if (isUniqueViolation(error)) {
       throw new AppError("EMAIL_TAKEN", "An account with this e-mail already exists.");
@@ -46,7 +53,7 @@ export async function signIn(
   input: { email: string; password: string },
 ): Promise<{ account: AccountDto; session: SessionInfo }> {
   const account = await accounts.findAccountByEmail(ctx.prisma, input.email);
-  const matches = await bcrypt.compare(input.password, account?.passwordHash ?? DUMMY_HASH);
+  const matches = await bcrypt.compare(prehash(input.password), account?.passwordHash ?? DUMMY_HASH);
   if (!account || !matches) {
     throw new AppError("INVALID_CREDENTIALS", "The e-mail or password is incorrect.");
   }

@@ -48,6 +48,16 @@ describe("AuthService", () => {
     expect(unknownEmail.code).toBe("INVALID_CREDENTIALS");
   });
 
+  it("checks every character of a long Cyrillic password", async () => {
+    // 40 Cyrillic letters are 80 UTF-8 bytes, beyond the 72 bytes bcrypt reads by itself.
+    const start = "ж".repeat(36);
+    await authService.signUp(ctx(), { email: "olia@example.com", password: `${start}абвг` });
+    const error = await expectError(authService.signIn(ctx(), { email: "olia@example.com", password: `${start}дежз` }));
+    expect(error.code).toBe("INVALID_CREDENTIALS");
+    const ok = await authService.signIn(ctx(), { email: "olia@example.com", password: `${start}абвг` });
+    expect(ok.account.email).toBe("olia@example.com");
+  });
+
   it("authenticates a valid session and rejects an expired one", async () => {
     const { account, session } = await authService.signUp(ctx(), { email: "olia@example.com", password: "password1" });
     const authed = await authService.authenticate(ctx(), session.id);
