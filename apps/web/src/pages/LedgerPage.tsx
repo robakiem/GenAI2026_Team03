@@ -11,6 +11,7 @@ import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { FormError } from "../components/ui/FormError";
 import { UsersIcon } from "../components/ui/icons";
+import { FieldNote, fieldInputClass } from "../components/ui/TextField";
 import { useFieldErrors } from "../components/useFieldErrors";
 import { uk } from "../i18n/uk";
 
@@ -100,23 +101,13 @@ export function LedgerPage() {
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder={uk.ledger.memberNamePlaceholder}
-                className={
-                  "w-full rounded-xl border bg-white px-3.5 py-2.5 text-slate-900 shadow-sm outline-none transition " +
-                  "placeholder:text-slate-400 focus:ring-2 " +
-                  (errors.name
-                    ? "border-red-400 focus:border-red-500 focus:ring-red-500/30"
-                    : "border-slate-300 focus:border-emerald-500 focus:ring-emerald-500/30")
-                }
+                className={fieldInputClass(errors.name)}
               />
               <Button type="submit" disabled={addMember.isPending} className="shrink-0">
                 {uk.ledger.addButton}
               </Button>
             </form>
-            {errors.name ? (
-              <p id="member-name-note" className="mt-2 text-xs text-red-600">
-                {errors.name}
-              </p>
-            ) : null}
+            <FieldNote id="member-name-note" error={errors.name} />
             {bannerError ? (
               <div className="mt-3">
                 <FormError error={bannerError} />
