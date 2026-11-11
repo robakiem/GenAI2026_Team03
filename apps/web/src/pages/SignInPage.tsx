@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router";
+import { signInSchema } from "@babki/shared";
 import { useSignIn } from "../api/auth";
 import { AppShell } from "../components/AppShell";
 import { AuthForm } from "../components/AuthForm";
@@ -15,6 +16,8 @@ export function SignInPage() {
         submitLabel={uk.auth.signInButton}
         pending={signIn.isPending}
         error={signIn.error}
+        schema={signInSchema}
+        limits={{}}
         onSubmit={(credentials) => signIn.mutate(credentials, { onSuccess: () => void navigate("/ledgers") })}
         footer={
           <Link to="/signup" className="font-medium text-emerald-700 hover:underline">

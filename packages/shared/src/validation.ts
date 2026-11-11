@@ -3,6 +3,16 @@ import type { ValidationDetail, ValidationDetailCode } from "./errors";
 
 type Issue = z.ZodError["issues"][number];
 
+export type ValidationResult<T> = { success: true; data: T } | { success: false; details: ValidationDetail[] };
+
+// Check input with a shared schema: the parsed value, or the `details` of contracts 3.1. The API
+// answers VALIDATION_ERROR with them; the forms show them at their fields before sending.
+export function validateInput<S extends z.ZodType>(schema: S, input: unknown): ValidationResult<z.output<S>> {
+  const result = schema.safeParse(input);
+  if (result.success) return { success: true, data: result.data };
+  return { success: false, details: zodErrorToDetails(result.error, input) };
+}
+
 // Turn a Zod error into the API's `details` array (contracts 3.1): one { field, code, message } per issue.
 export function zodErrorToDetails(error: z.ZodError, input: unknown): ValidationDetail[] {
   return error.issues.map((issue) => ({

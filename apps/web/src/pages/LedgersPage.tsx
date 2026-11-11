@@ -1,10 +1,11 @@
 import { Link, useNavigate } from "react-router";
 import { useSignOut } from "../api/auth";
 import { useLedgers } from "../api/ledgers";
-import { useAuthRedirect } from "../api/useAuthRedirect";
+import { isUnauthenticated, useAuthRedirect } from "../api/useAuthRedirect";
 import { AppShell } from "../components/AppShell";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
+import { FormError } from "../components/ui/FormError";
 import { ChevronRightIcon, PlusIcon, UsersIcon } from "../components/ui/icons";
 import { StateChip } from "../components/StateChip";
 import { uk } from "../i18n/uk";
@@ -16,6 +17,8 @@ export function LedgersPage() {
   useAuthRedirect(ledgers.error);
 
   const list = ledgers.data?.ledgers;
+  // Any failure but 401 (which redirects) is shown instead of an empty page: network, 500.
+  const loadError = ledgers.error && !isUnauthenticated(ledgers.error) ? ledgers.error : null;
 
   return (
     <AppShell
@@ -23,6 +26,7 @@ export function LedgersPage() {
         <Button
           variant="ghost"
           className="px-3 py-1.5"
+          disabled={signOut.isPending}
           onClick={() => signOut.mutate(undefined, { onSuccess: () => void navigate("/signin") })}
         >
           {uk.auth.signOutButton}
@@ -31,12 +35,24 @@ export function LedgersPage() {
     >
       <h1 className="text-2xl font-bold tracking-tight text-slate-900">{uk.ledgers.title}</h1>
 
+      {signOut.error ? (
+        <div className="mt-4">
+          <FormError error={signOut.error} />
+        </div>
+      ) : null}
+
       <Button className="mt-4 w-full" onClick={() => void navigate("/ledgers/new")}>
         <PlusIcon className="h-5 w-5" />
         {uk.ledgers.create}
       </Button>
 
       {ledgers.isPending ? <p className="mt-6 text-slate-500">{uk.common.loading}</p> : null}
+
+      {loadError ? (
+        <div className="mt-6">
+          <FormError error={loadError} />
+        </div>
+      ) : null}
 
       {list && list.length === 0 ? (
         <Card className="mt-6 flex flex-col items-center py-10 text-center">

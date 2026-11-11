@@ -30,7 +30,7 @@ export const uk = {
     signInTitle: "Вхід",
     email: "Електронна пошта",
     password: "Пароль",
-    passwordHint: "Щонайменше 8 символів",
+    passwordHint: (min: number) => `Щонайменше ${min} символів`,
     signUpButton: "Зареєструватися",
     signInButton: "Увійти",
     signOutButton: "Вийти",
@@ -69,15 +69,22 @@ export const uk = {
   },
   common: {
     loading: "Завантаження…",
-    required: "Заповніть це поле.",
     soon: "Цей розділ з'явиться в наступних версіях.",
+  },
+  // Messages under a form field, by the detail codes of contracts 3.1; numbers come from LIMITS.
+  fieldErrors: {
+    required: "Заповніть це поле.",
+    tooShort: (min: number) => `Щонайменше ${min} символів.`,
+    tooLong: (max: number) => `Не більше ${max} символів.`,
+    invalidEmail: "Перевірте адресу пошти.",
+    invalid: "Перевірте це поле.",
   },
   errors: {
     VALIDATION_ERROR: "Перевірте введені дані.",
     EMAIL_TAKEN: "Акаунт із такою поштою вже існує.",
     INVALID_CREDENTIALS: "Невірна пошта або пароль.",
     MEMBER_NAME_TAKEN: "Учасник із таким іменем уже є в поїздці.",
-    MEMBER_LIMIT_REACHED: "Досягнуто максимум учасників (20).",
+    MEMBER_LIMIT_REACHED: (limit: number) => `Досягнуто максимум учасників (${limit}).`,
     LEDGER_NOT_FOUND: "Поїздку не знайдено.",
     UNAUTHENTICATED: "Потрібно увійти.",
     default: "Щось пішло не так. Спробуйте ще раз.",

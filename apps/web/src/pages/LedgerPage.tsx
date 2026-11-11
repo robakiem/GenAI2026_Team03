@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router";
+import { addMemberSchema, LIMITS } from "@babki/shared";
 import { ApiError } from "../api/client";
 import { useAddMember, useLedger } from "../api/ledgers";
-import { useAuthRedirect } from "../api/useAuthRedirect";
+import { isUnauthenticated, useAuthRedirect } from "../api/useAuthRedirect";
 import { AppShell } from "../components/AppShell";
 import { MemberRow } from "../components/MemberRow";
 import { StateChip } from "../components/StateChip";
@@ -10,18 +11,25 @@ import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { FormError } from "../components/ui/FormError";
 import { UsersIcon } from "../components/ui/icons";
+import { useFieldErrors } from "../components/useFieldErrors";
 import { uk } from "../i18n/uk";
+
+const limits = { name: LIMITS.memberName };
 
 export function LedgerPage() {
   const { ledgerId = "" } = useParams();
   const ledger = useLedger(ledgerId);
   const addMember = useAddMember(ledgerId);
   const [name, setName] = useState("");
+  const { errors, validate, bannerError } = useFieldErrors(limits, addMember.error);
   useAuthRedirect(ledger.error);
+  useAuthRedirect(addMember.error);
 
   function handleAdd(event: FormEvent) {
     event.preventDefault();
-    addMember.mutate({ name }, { onSuccess: () => setName("") });
+    const body = validate(addMemberSchema, { name });
+    if (!body) return;
+    addMember.mutate(body, { onSuccess: () => setName("") });
   }
 
   const backLink = (
@@ -39,11 +47,20 @@ export function LedgerPage() {
     );
   }
 
+  // Any other failure (network, 500) is shown instead of an empty page; 401 redirects instead.
+  const loadError = ledger.error && !isUnauthenticated(ledger.error) ? ledger.error : null;
+
   return (
     <AppShell>
       {backLink}
 
       {ledger.isPending ? <p className="mt-6 text-slate-500">{uk.common.loading}</p> : null}
+
+      {loadError ? (
+        <div className="mt-6">
+          <FormError error={loadError} />
+        </div>
+      ) : null}
 
       {ledger.data ? (
         <>
@@ -76,20 +93,33 @@ export function LedgerPage() {
             <form onSubmit={handleAdd} className="flex gap-2" noValidate>
               <input
                 aria-label={uk.ledger.memberNameLabel}
+                aria-invalid={errors.name ? true : undefined}
+                aria-describedby={errors.name ? "member-name-note" : undefined}
                 required
-                maxLength={40}
+                maxLength={LIMITS.memberName.max}
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder={uk.ledger.memberNamePlaceholder}
-                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30"
+                className={
+                  "w-full rounded-xl border bg-white px-3.5 py-2.5 text-slate-900 shadow-sm outline-none transition " +
+                  "placeholder:text-slate-400 focus:ring-2 " +
+                  (errors.name
+                    ? "border-red-400 focus:border-red-500 focus:ring-red-500/30"
+                    : "border-slate-300 focus:border-emerald-500 focus:ring-emerald-500/30")
+                }
               />
               <Button type="submit" disabled={addMember.isPending} className="shrink-0">
                 {uk.ledger.addButton}
               </Button>
             </form>
-            {addMember.error ? (
+            {errors.name ? (
+              <p id="member-name-note" className="mt-2 text-xs text-red-600">
+                {errors.name}
+              </p>
+            ) : null}
+            {bannerError ? (
               <div className="mt-3">
-                <FormError error={addMember.error} />
+                <FormError error={bannerError} />
               </div>
             ) : null}
           </Card>
