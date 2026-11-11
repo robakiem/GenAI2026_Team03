@@ -71,6 +71,26 @@ describe("MemberService (US-005)", () => {
     expect(error.params).toEqual({ limit: 20 });
   });
 
+  it("refuses a member on a closed ledger and adds nothing", async () => {
+    const { accountId, ledgerId } = await newLedger();
+    await db.prisma.ledger.update({ where: { id: ledgerId }, data: { closedAt: new Date() } });
+    const error = await expectError(memberService.addMember(ctx(), { accountId, ledgerId, name: "Max" }));
+    expect(error.code).toBe("LEDGER_CLOSED");
+    expect(await db.prisma.member.count({ where: { ledgerId } })).toBe(1);
+  });
+
+  it("refuses a member once settlement has started and adds nothing", async () => {
+    const { accountId, ledgerId } = await newLedger();
+    const max = await memberService.addMember(ctx(), { accountId, ledgerId, name: "Max" });
+    const olia = await db.prisma.member.findFirstOrThrow({ where: { ledgerId, isCoordinator: true } });
+    await db.prisma.transfer.create({
+      data: { ledgerId, fromMemberId: max.member.id, toMemberId: olia.id, amountKopecks: 36213n },
+    });
+    const error = await expectError(memberService.addMember(ctx(), { accountId, ledgerId, name: "Iryna" }));
+    expect(error.code).toBe("SETTLEMENT_STARTED");
+    expect(await db.prisma.member.count({ where: { ledgerId } })).toBe(2);
+  });
+
   it("refuses adding a member to another Coordinator's ledger", async () => {
     const { ledgerId } = await newLedger();
     const { account: other } = await authService.signUp(ctx(), { email: "max@example.com", password: "password1" });

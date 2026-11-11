@@ -14,16 +14,17 @@ export async function addMember(
   ctx: ServiceContext,
   input: { accountId: string; ledgerId: string; name: string },
 ): Promise<MemberCreated> {
-  const ledger = await ledgers.findLedgerByIdAndCoordinator(ctx.prisma, input.ledgerId, input.accountId);
-  if (!ledger) {
-    throw new AppError("LEDGER_NOT_FOUND", "Ledger not found.");
-  }
-  if (ledger.closedAt) {
-    throw new AppError("LEDGER_CLOSED", "The ledger is closed; members cannot be added.");
-  }
-
   const nameKey = toMemberNameKey(input.name);
   const member = await ctx.prisma.$transaction(async (tx) => {
+    // Every check runs in the same transaction as the insert, so a concurrent close or first
+    // "reported paid" cannot slip in between (ADR-0006).
+    const ledger = await ledgers.findLedgerByIdAndCoordinator(tx, input.ledgerId, input.accountId);
+    if (!ledger) {
+      throw new AppError("LEDGER_NOT_FOUND", "Ledger not found.");
+    }
+    if (ledger.closedAt) {
+      throw new AppError("LEDGER_CLOSED", "The ledger is closed; members cannot be added.");
+    }
     // Freeze: no member may be added once settlement has started (contracts 1.9, BR-36).
     if ((await members.countTransfersByLedger(tx, input.ledgerId)) > 0) {
       throw new AppError("SETTLEMENT_STARTED", "Members cannot be added after the first transfer was reported as paid.");
