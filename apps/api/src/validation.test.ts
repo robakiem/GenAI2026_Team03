@@ -1,0 +1,65 @@
+import { describe, expect, it } from "vitest";
+import { addMemberSchema, createLedgerSchema, signUpSchema } from "@babki/shared";
+import { AppError } from "./errors";
+import { parseBody } from "./validation";
+
+function catchError(fn: () => unknown): AppError {
+  try {
+    fn();
+  } catch (error) {
+    if (error instanceof AppError) return error;
+    throw error;
+  }
+  throw new Error("expected an AppError to be thrown");
+}
+
+const name = (length: number) => "x".repeat(length);
+
+describe("ledger name validation (US-004)", () => {
+  it("accepts a name of 1 and 60 characters and trims it", () => {
+    expect(parseBody(createLedgerSchema, { name: "  Carpathians  ", coordinatorName: "Olia" })).toEqual({
+      name: "Carpathians",
+      coordinatorName: "Olia",
+    });
+    expect(parseBody(createLedgerSchema, { name: name(60), coordinatorName: "Olia" }).name).toHaveLength(60);
+  });
+
+  it("A blank or too long name is refused", () => {
+    for (const value of ["", "   ", name(61)]) {
+      const error = catchError(() => parseBody(createLedgerSchema, { name: value, coordinatorName: "Olia" }));
+      expect(error.code).toBe("VALIDATION_ERROR");
+      expect(error.details?.[0]?.field).toBe("name");
+      expect(["TOO_SHORT", "TOO_LONG"]).toContain(error.details?.[0]?.code);
+    }
+  });
+});
+
+describe("member name validation (US-005)", () => {
+  it("accepts 1 and 40 characters, refuses 41", () => {
+    expect(parseBody(addMemberSchema, { name: name(40) }).name).toHaveLength(40);
+    const error = catchError(() => parseBody(addMemberSchema, { name: name(41) }));
+    expect(error.details?.[0]?.code).toBe("TOO_LONG");
+  });
+
+  it("reports a missing name as REQUIRED", () => {
+    const error = catchError(() => parseBody(addMemberSchema, {}));
+    expect(error.details?.[0]?.code).toBe("REQUIRED");
+  });
+});
+
+describe("account validation (US-004)", () => {
+  it("normalises the e-mail and accepts a valid one", () => {
+    expect(parseBody(signUpSchema, { email: "  Olia@Example.COM ", password: "password1" }).email).toBe(
+      "olia@example.com",
+    );
+  });
+
+  it("refuses an invalid e-mail and a short password", () => {
+    expect(catchError(() => parseBody(signUpSchema, { email: "not-an-email", password: "password1" })).details?.[0]?.code).toBe(
+      "INVALID_EMAIL",
+    );
+    const short = catchError(() => parseBody(signUpSchema, { email: "olia@example.com", password: "short" }));
+    expect(short.details?.[0]?.field).toBe("password");
+    expect(short.details?.[0]?.code).toBe("TOO_SHORT");
+  });
+});

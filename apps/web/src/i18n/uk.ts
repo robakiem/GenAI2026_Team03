@@ -3,7 +3,10 @@ export const uk = {
   app: {
     name: "Babki",
     tagline: "Облік спільних витрат для подорожей з друзями",
-    screensTitle: "Майбутні екрани",
+    heroTitle: "Спільні витрати поїздки — під контролем",
+    heroLead: "Створіть поїздку, додайте друзів і тримайте всі витрати та борги в одному місці.",
+    getStarted: "Почати",
+    screensTitle: "Екрани (демо-навігація)",
     home: "На головну",
   },
   screens: {
@@ -24,6 +27,66 @@ export const uk = {
     dbUnavailable: "API: ok · DB: недоступна",
     unreachable: "API: недоступний",
   },
+  auth: {
+    signUpTitle: "Реєстрація Координатора",
+    signInTitle: "Вхід",
+    email: "Електронна пошта",
+    password: "Пароль",
+    passwordHint: "Щонайменше 8 символів",
+    signUpButton: "Зареєструватися",
+    signInButton: "Увійти",
+    signOutButton: "Вийти",
+    toSignIn: "Уже маєте акаунт? Увійти",
+    toSignUp: "Немає акаунта? Зареєструватися",
+  },
+  ledgers: {
+    title: "Мої поїздки",
+    empty: "У вас ще немає поїздок.",
+    create: "Створити поїздку",
+    open: "Відкрити",
+  },
+  ledgerNew: {
+    title: "Нова поїздка",
+    nameLabel: "Назва поїздки",
+    namePlaceholder: "Наприклад, Карпати",
+    coordinatorLabel: "Ваше ім'я в поїздці",
+    coordinatorPlaceholder: "Наприклад, Оля",
+    submit: "Створити",
+  },
+  ledger: {
+    back: "← До списку поїздок",
+    membersTitle: "Учасники",
+    coordinatorBadge: "Координатор",
+    addMemberTitle: "Додати друга",
+    memberNameLabel: "Ім'я друга",
+    memberNamePlaceholder: "Наприклад, Макс",
+    addButton: "Додати",
+    linkLabel: "Персональне посилання",
+    copyLink: "Копіювати",
+    copied: "Скопійовано",
+    notFound: "Поїздку не знайдено.",
+  },
+  state: {
+    ACTIVE: "Активна",
+    SETTLING: "Розрахунок",
+    CLOSED: "Закрита",
+  },
+  common: {
+    loading: "Завантаження…",
+    required: "Заповніть це поле.",
+    soon: "Цей розділ з'явиться в наступних версіях.",
+  },
+  errors: {
+    VALIDATION_ERROR: "Перевірте введені дані.",
+    EMAIL_TAKEN: "Акаунт із такою поштою вже існує.",
+    INVALID_CREDENTIALS: "Невірна пошта або пароль.",
+    MEMBER_NAME_TAKEN: "Учасник із таким іменем уже є в поїздці.",
+    MEMBER_LIMIT_REACHED: "Досягнуто максимум учасників (20).",
+    LEDGER_NOT_FOUND: "Поїздку не знайдено.",
+    UNAUTHENTICATED: "Потрібно увійти.",
+    default: "Щось пішло не так. Спробуйте ще раз.",
+  },
 } as const;
 
 export type ScreenKey = keyof typeof uk.screens;
+export type ErrorTextKey = keyof typeof uk.errors;

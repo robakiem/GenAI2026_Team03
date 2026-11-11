@@ -1,18 +1,24 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
-import { ERROR_STATUS, type ErrorCode, type ErrorResponse } from "@babki/shared";
+import { ERROR_STATUS, type ErrorCode, type ErrorResponse, type ValidationDetail } from "@babki/shared";
 
 export class AppError extends Error {
   constructor(
     readonly code: ErrorCode,
     message: string,
     readonly params?: Record<string, string | number>,
+    readonly details?: ValidationDetail[],
   ) {
     super(message);
   }
 }
 
-function toResponse(code: ErrorCode, message: string, params?: Record<string, string | number>): ErrorResponse {
-  return { error: { code, message, ...(params && { params }) } };
+function toResponse(
+  code: ErrorCode,
+  message: string,
+  params?: Record<string, string | number>,
+  details?: ValidationDetail[],
+): ErrorResponse {
+  return { error: { code, message, ...(details && { details }), ...(params && { params }) } };
 }
 
 export const notFoundHandler: RequestHandler = (_req, _res, next) => {
@@ -22,7 +28,7 @@ export const notFoundHandler: RequestHandler = (_req, _res, next) => {
 // Express 4 arguments are required for Express to recognise an error handler
 export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   if (err instanceof AppError) {
-    res.status(ERROR_STATUS[err.code]).json(toResponse(err.code, err.message, err.params));
+    res.status(ERROR_STATUS[err.code]).json(toResponse(err.code, err.message, err.params, err.details));
     return;
   }
   if (err?.type === "entity.parse.failed") {
