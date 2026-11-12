@@ -106,4 +106,4 @@ pnpm dev
 | **5** | **Наскрізний сценарій «Створити поїздку»** | | |
 | 5.1 | Реалізація всіх шарів у гілці `feature/create-trip`: UI, бізнес-логіка, збереження в SQLite | [5.1_code_generation.md](prompts/5.1_code_generation.md) | код у `apps/` і `packages/`, [як протестувати](#як-протестувати-сценарій-створити-поїздку) |
 | 5.2 | Детерміновані перевірки: типи, ESLint, тести, збірка (`pnpm check`) | [5.2_fixing_and_refactoring.md](prompts/5.2_fixing_and_refactoring.md) | там само |
-| 5.3 | Код-рев'ю за допомогою ШІ (субагент [`code-reviewer`](.claude/agents/code-reviewer.md)), виправлення зауважень і злиття в `main` | — | [5.3_ai_code_review_RESULT.md](prompts/prompts%20results/5.3_ai_code_review_RESULT.md), [PR #1](https://github.com/robakiem/GenAI2026_Team03/pull/1) |
+| 5.3 | Код-рев'ю за допомогою ШІ (субагент [`code-reviewer`](.claude/agents/code-reviewer.md)), виправлення зауважень і злиття в `main` | [5.3_ai_code_review.md](prompts/5.3_ai_code_review.md) | [5.3_ai_code_review_RESULT.md](prompts/prompts%20results/5.3_ai_code_review_RESULT.md), [PR #1](https://github.com/robakiem/GenAI2026_Team03/pull/1) |
