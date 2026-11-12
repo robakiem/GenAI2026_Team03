@@ -104,7 +104,6 @@ pnpm dev
 | 4.3 | Технічні контракти: схема даних, API, формат помилок | [4.3_technical_contracts.md](prompts/4.3_technical_contracts.md) | [docs/technical-contracts.md](docs/technical-contracts.md) |
 | 4.4 | Каркас (Walking Skeleton) та інструкції для ШІ-асистента (AI-Harness) | [4.4_scaffolding_skeleton.md](prompts/4.4_scaffolding_skeleton.md) | код у `apps/` і `packages/`, [CLAUDE.md](CLAUDE.md) |
 | **5** | **Наскрізний сценарій «Створити поїздку»** | | |
-| 5.1 | Вибір наскрізного сценарію (епіку) | — | [5.1_epic_selection.md](prompts/prompts%20results/5.1_epic_selection.md) |
-| 5.2 | Реалізація всіх шарів у гілці `feature/create-trip`: UI, бізнес-логіка, збереження в SQLite | [5.2_epic_create_trip_PROMPT.md](prompts/5.2_epic_create_trip_PROMPT.md) | код у `apps/` і `packages/`, [як протестувати](#як-протестувати-сценарій-створити-поїздку) |
-| 5.3 | Детерміновані перевірки: типи, ESLint, тести, збірка (`pnpm check`) | [5.3_fixing_and_refactoring.md](prompts/5.3_fixing_and_refactoring.md) | там само |
-| 5.4 | Код-рев'ю за допомогою ШІ (субагент [`code-reviewer`](.claude/agents/code-reviewer.md)), виправлення зауважень і злиття в `main` | — | [5.4_ai_code_review_RESULT.md](prompts/prompts%20results/5.4_ai_code_review_RESULT.md), [PR #1](https://github.com/robakiem/GenAI2026_Team03/pull/1) |
+| 5.1 | Реалізація всіх шарів у гілці `feature/create-trip`: UI, бізнес-логіка, збереження в SQLite | [5.1_code_generation.md](prompts/5.1_code_generation.md) | код у `apps/` і `packages/`, [як протестувати](#як-протестувати-сценарій-створити-поїздку) |
+| 5.2 | Детерміновані перевірки: типи, ESLint, тести, збірка (`pnpm check`) | [5.2_fixing_and_refactoring.md](prompts/5.2_fixing_and_refactoring.md) | там само |
+| 5.3 | Код-рев'ю за допомогою ШІ (субагент [`code-reviewer`](.claude/agents/code-reviewer.md)), виправлення зауважень і злиття в `main` | — | [5.3_ai_code_review_RESULT.md](prompts/prompts%20results/5.3_ai_code_review_RESULT.md), [PR #1](https://github.com/robakiem/GenAI2026_Team03/pull/1) |
