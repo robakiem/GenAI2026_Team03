@@ -3,9 +3,9 @@ import { uk } from "../i18n/uk";
 
 // The colour themes. The swatch shows the theme itself, so its colours are fixed, not theme variables.
 const THEMES = [
-  { id: "bloom", swatch: ["#e94f7c", "#fff6e6"], meta: "#e94f7c" },
-  { id: "clay", swatch: ["#7d2f3c", "#7a9a6c"], meta: "#7d2f3c" },
-  { id: "night", swatch: ["#17142a", "#ff6f91"], meta: "#17142a" },
+  { id: "bloom", background: "#fff6e6", dot: "#e94f7c", meta: "#e94f7c" },
+  { id: "clay", background: "#f3ead6", dot: "#7d2f3c", meta: "#7d2f3c" },
+  { id: "night", background: "#17142a", dot: "#ff6f91", meta: "#17142a" },
 ] as const;
 
 export type ThemeId = (typeof THEMES)[number]["id"];
@@ -40,7 +40,7 @@ export function ThemePicker() {
   }
 
   return (
-    <div role="radiogroup" aria-label={uk.theme.label} className="flex items-center gap-1.5">
+    <div role="radiogroup" aria-label={uk.theme.label} className="flex items-center gap-0.5 rounded-full bg-on-accent/20 p-1">
       {THEMES.map((item) => (
         <button
           key={item.id}
@@ -50,11 +50,17 @@ export function ThemePicker() {
           title={uk.theme.names[item.id]}
           aria-label={uk.theme.names[item.id]}
           onClick={() => choose(item.id)}
-          className={`h-6 w-6 rounded-full border-2 transition focus:outline-none focus-visible:ring-4 focus-visible:ring-on-accent/50 ${
-            theme === item.id ? "scale-110 border-on-accent" : "border-on-accent/40 hover:border-on-accent/80"
+          className={`flex h-7 w-7 items-center justify-center rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-on-accent ${
+            theme === item.id ? "ring-2 ring-on-accent" : "hover:bg-on-accent/30"
           }`}
-          style={{ background: `linear-gradient(135deg, ${item.swatch[0]} 50%, ${item.swatch[1]} 50%)` }}
-        />
+        >
+          <span
+            className="flex h-[18px] w-[18px] items-center justify-center rounded-full shadow-[inset_0_0_0_1px_rgba(0,0,0,0.15)]"
+            style={{ backgroundColor: item.background }}
+          >
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.dot }} />
+          </span>
+        </button>
       ))}
     </div>
   );
