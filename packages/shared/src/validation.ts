@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { ValidationDetail, ValidationDetailCode } from "./errors";
+import { VALIDATION_DETAIL_CODES, type ValidationDetail, type ValidationDetailCode } from "./errors";
 
 type Issue = z.ZodError["issues"][number];
 
@@ -47,6 +47,9 @@ function detailCode(issue: Issue, input: unknown): ValidationDetailCode {
       return "format" in issue && issue.format === "email" ? "INVALID_EMAIL" : "INVALID_TYPE";
     case "not_multiple_of":
       return "NOT_AN_INTEGER";
+    case "custom":
+      // A refinement in the shared schemas names its detail code in params (e.g. DUPLICATE_ITEM).
+      return isDetailCode(issue.params?.detail) ? issue.params.detail : "INVALID_TYPE";
     default:
       return "INVALID_TYPE";
   }
@@ -59,4 +62,8 @@ function valueAtPath(input: unknown, path: ReadonlyArray<PropertyKey>): unknown 
     current = (current as Record<PropertyKey, unknown>)[key];
   }
   return current;
+}
+
+function isDetailCode(value: unknown): value is ValidationDetailCode {
+  return typeof value === "string" && (VALIDATION_DETAIL_CODES as readonly string[]).includes(value);
 }

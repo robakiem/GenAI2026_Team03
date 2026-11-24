@@ -6,6 +6,7 @@ import * as members from "../data/members";
 import { uniqueViolationTarget } from "../data/prisma-error";
 import * as transfers from "../data/transfers";
 import { AppError } from "../errors";
+import { findOwnLedger } from "./guards";
 import { toMemberDto } from "./mappers";
 import { newLinkToken } from "./tokens";
 
@@ -59,4 +60,18 @@ export async function addMember(
     }
   });
   return { member: toMemberDto(member) };
+}
+
+// EP-10 (US-050): the Coordinator keeps each member's payment details. Allowed at any time,
+// also after the first mark or closing (CD-13); a repeat changes nothing.
+export async function setPaymentDetails(
+  ctx: ServiceContext,
+  input: { accountId: string; ledgerId: string; memberId: string; paymentDetails: string | null },
+): Promise<MemberCreated> {
+  const ledger = await findOwnLedger(ctx.prisma, input.accountId, input.ledgerId);
+  const member = await members.findMemberInLedger(ctx.prisma, ledger.id, input.memberId);
+  if (!member) {
+    throw new AppError("MEMBER_NOT_FOUND", "Member not found.");
+  }
+  return { member: toMemberDto(await members.updatePaymentDetails(ctx.prisma, member.id, input.paymentDetails)) };
 }

@@ -1,13 +1,14 @@
 import { Router } from "express";
 import type { RequestHandler } from "express";
-import { addMemberSchema, createLedgerSchema } from "@babki/shared";
+import { addMemberSchema, createLedgerSchema, paymentDetailsSchema } from "@babki/shared";
 import type { ServiceContext } from "../context";
 import { currentAccount } from "../middleware";
 import * as ledgerService from "../services/ledger.service";
 import * as memberService from "../services/member.service";
 import { parseBody } from "../validation";
+import { expenseRouter } from "./expense.routes";
 
-// EP-06…EP-09: ledgers and members. All routes require the Coordinator session.
+// EP-06…EP-14: ledgers, members, expenses and the settlement overview. All routes require the Coordinator session.
 export function ledgerRouter(ctx: ServiceContext, requireCoordinator: RequestHandler): Router {
   const router = Router();
   router.use(requireCoordinator);
@@ -39,6 +40,21 @@ export function ledgerRouter(ctx: ServiceContext, requireCoordinator: RequestHan
     });
     res.status(201).json(result);
   });
+
+  router.put("/:ledgerId/members/:memberId/payment-details", async (req, res) => {
+    const account = currentAccount(res);
+    const body = parseBody(paymentDetailsSchema, req.body);
+    res.json(
+      await memberService.setPaymentDetails(ctx, {
+        accountId: account.id,
+        ledgerId: req.params.ledgerId,
+        memberId: req.params.memberId,
+        paymentDetails: body.paymentDetails,
+      }),
+    );
+  });
+
+  router.use("/:ledgerId", expenseRouter(ctx));
 
   return router;
 }

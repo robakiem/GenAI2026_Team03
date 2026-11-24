@@ -5,6 +5,7 @@ import { makeRequireCoordinator } from "./middleware";
 import { authRouter } from "./routes/auth.routes";
 import { healthRouter } from "./routes/health.routes";
 import { ledgerRouter } from "./routes/ledger.routes";
+import { linkRouter } from "./routes/link.routes";
 
 export interface AppDeps {
   pingDatabase: () => Promise<void>;
@@ -26,6 +27,7 @@ export function createApp({ pingDatabase, prisma }: AppDeps) {
   app.use("/api", healthRouter(pingDatabase));
   app.use("/api/auth", authRouter(ctx, requireCoordinator));
   app.use("/api/ledgers", ledgerRouter(ctx, requireCoordinator));
+  app.use("/api/links", linkRouter(ctx));
 
   app.use(notFoundHandler);
   app.use(errorHandler);

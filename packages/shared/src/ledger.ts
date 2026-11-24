@@ -7,3 +7,8 @@ export function deriveLedgerState(closedAt: Date | string | null, hasTransfers: 
   if (hasTransfers) return "SETTLING";
   return "ACTIVE";
 }
+
+// BR-46: "fully settled" only for a closed ledger that has transfers, all of them confirmed.
+export function isFullySettled(closedAt: Date | string | null, transferStates: readonly string[]): boolean {
+  return Boolean(closedAt) && transferStates.length > 0 && transferStates.every((state) => state === "CONFIRMED");
+}

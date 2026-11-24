@@ -10,3 +10,12 @@ export async function ledgerIdsWithTransfers(db: Db, ledgerIds: string[]): Promi
   });
   return new Set(rows.map((row) => row.ledgerId));
 }
+
+// Saved transfers of a ledger. The BigInt amount (CD-14) becomes a plain number here, before it
+// reaches a service; it is always below 2^53 (500 × 99 999 999 kopecks).
+export async function listTransfersByLedger(db: Db, ledgerId: string) {
+  const rows = await db.transfer.findMany({ where: { ledgerId } });
+  return rows.map((row) => ({ ...row, amountKopecks: Number(row.amountKopecks) }));
+}
+
+export type SavedTransfer = Awaited<ReturnType<typeof listTransfersByLedger>>[number];
