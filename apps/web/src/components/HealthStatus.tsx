@@ -6,17 +6,17 @@ export function HealthStatus() {
   const { data, error, isPending } = useHealth();
 
   let text: string = uk.health.checking;
-  let dot = "bg-slate-400";
-  let wrap = "bg-slate-100 text-slate-600";
+  let dot = "bg-ink-soft";
+  let wrap = "bg-line/60 text-ink-soft";
   if (data) {
     text = uk.health.ok;
-    dot = "bg-emerald-500";
-    wrap = "bg-emerald-50 text-emerald-700";
+    dot = "bg-leaf";
+    wrap = "bg-leaf-soft text-leaf-deep";
   } else if (!isPending) {
     const dbDown = error instanceof ApiError && error.code === "DB_UNAVAILABLE";
     text = dbDown ? uk.health.dbUnavailable : uk.health.unreachable;
-    dot = "bg-red-500";
-    wrap = "bg-red-50 text-red-700";
+    dot = "bg-danger";
+    wrap = "bg-danger-soft text-danger";
   }
 
   return (

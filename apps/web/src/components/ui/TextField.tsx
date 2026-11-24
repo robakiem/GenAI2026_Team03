@@ -4,11 +4,9 @@ import type { InputHTMLAttributes } from "react";
 // so a field error looks and reads the same everywhere.
 export function fieldInputClass(error: string | undefined): string {
   return (
-    "w-full rounded-xl border bg-white px-3.5 py-2.5 text-slate-900 shadow-sm outline-none transition " +
-    "placeholder:text-slate-400 focus:ring-2 " +
-    (error
-      ? "border-red-400 focus:border-red-500 focus:ring-red-500/30"
-      : "border-slate-300 focus:border-emerald-500 focus:ring-emerald-500/30")
+    "w-full min-w-0 rounded-2xl border-2 bg-paper px-4 py-2.5 text-ink outline-none transition " +
+    "placeholder:text-ink-soft/60 focus:ring-4 " +
+    (error ? "border-danger/60 focus:border-danger focus:ring-danger/15" : "border-line focus:border-pink focus:ring-pink/15")
   );
 }
 
@@ -16,7 +14,7 @@ export function FieldNote({ id, error, hint }: { id: string; error?: string; hin
   const note = error ?? hint;
   if (!note) return null;
   return (
-    <p id={id} className={`mt-1 text-xs ${error ? "text-red-600" : "text-slate-500"}`}>
+    <p id={id} className={`mt-1 text-xs ${error ? "font-medium text-danger" : "text-ink-soft"}`}>
       {note}
     </p>
   );
@@ -33,7 +31,7 @@ export function TextField({ label, hint, error, id, className = "", ...props }: 
   const noteId = `${id}-note`;
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-slate-700">
+      <label htmlFor={id} className="block text-sm font-semibold text-ink">
         {label}
       </label>
       <input

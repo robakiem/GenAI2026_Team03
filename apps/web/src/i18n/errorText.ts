@@ -1,17 +1,25 @@
-import { LIMITS, type ValidationDetail, type ValidationDetailCode } from "@babki/shared";
+import { formatBp, formatKopecks, LIMITS, type ValidationDetail, type ValidationDetailCode } from "@babki/shared";
 import { ApiError } from "../api/client";
 import { uk } from "./uk";
 
 // Map an API error to a Ukrainian message from the dictionary (NFR-11, A-15).
 export function messageForError(error: unknown): string {
   if (!(error instanceof ApiError) || !error.code) return uk.errors.default;
-  if (error.code === "MEMBER_LIMIT_REACHED") {
+  return messageForCode(error.code, error.params);
+}
+
+// Also used for the shared split check that runs in the form before anything is sent.
+export function messageForCode(code: string, params?: Record<string, string | number>): string {
+  const number = (key: string) => (typeof params?.[key] === "number" ? params[key] : 0);
+  if (code === "SHARES_SUM_MISMATCH") return uk.errors.SHARES_SUM_MISMATCH(formatKopecks(number("differenceKopecks")));
+  if (code === "PERCENT_SUM_MISMATCH") return uk.errors.PERCENT_SUM_MISMATCH(formatBp(number("differenceBp")));
+  if (code === "MEMBER_LIMIT_REACHED") {
     // params.limit comes with the error (contracts 3.3), so the text never repeats the number.
-    const limit = error.params?.limit;
+    const limit = params?.limit;
     return uk.errors.MEMBER_LIMIT_REACHED(typeof limit === "number" ? limit : LIMITS.membersPerLedger);
   }
-  if (error.code in uk.errors) {
-    const text = uk.errors[error.code as keyof typeof uk.errors];
+  if (code in uk.errors) {
+    const text = uk.errors[code as keyof typeof uk.errors];
     if (typeof text === "string") return text;
   }
   return uk.errors.default;
@@ -44,6 +52,8 @@ function fieldMessage(code: ValidationDetailCode, limit: Limit | undefined): str
       return limit?.max ? uk.fieldErrors.tooLong(limit.max) : uk.fieldErrors.invalid;
     case "INVALID_EMAIL":
       return uk.fieldErrors.invalidEmail;
+    case "DUPLICATE_ITEM":
+      return uk.fieldErrors.duplicate;
     default:
       return uk.fieldErrors.invalid;
   }

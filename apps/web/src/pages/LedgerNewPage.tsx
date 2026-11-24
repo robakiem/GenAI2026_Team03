@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { createLedgerSchema, LIMITS } from "@babki/shared";
 import { useCreateLedger } from "../api/ledgers";
 import { useAuthRedirect } from "../api/useAuthRedirect";
@@ -29,13 +29,8 @@ export function LedgerNewPage() {
   }
 
   return (
-    <AppShell>
-      <Link to="/ledgers" className="text-sm font-medium text-slate-500 hover:text-slate-700">
-        {uk.ledger.back}
-      </Link>
-      <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{uk.ledgerNew.title}</h1>
-
-      <Card className="mt-5">
+    <AppShell back={{ to: "/ledgers", label: uk.ledger.back }} title={uk.ledgerNew.title} accent={uk.ledgerNew.accent}>
+      <Card tone="pink" className="md:max-w-lg">
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <TextField
             id="name"

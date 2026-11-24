@@ -3,12 +3,20 @@ import { useSignOut } from "../api/auth";
 import { useLedgers } from "../api/ledgers";
 import { isUnauthenticated, useAuthRedirect } from "../api/useAuthRedirect";
 import { AppShell } from "../components/AppShell";
+import { Flower, Sprig } from "../components/decor/Flowers";
+import { StateChip } from "../components/StateChip";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { FormError } from "../components/ui/FormError";
-import { ChevronRightIcon, PlusIcon, UsersIcon } from "../components/ui/icons";
-import { StateChip } from "../components/StateChip";
+import { ChevronRightIcon, PlusIcon } from "../components/ui/icons";
 import { uk } from "../i18n/uk";
+
+const CARD_COLORS = [
+  { border: "border-pink-soft hover:border-pink", petal: "var(--petal-pink)", center: "var(--color-pink)" },
+  { border: "border-sky-soft hover:border-sky", petal: "var(--petal-sky)", center: "var(--color-sky)" },
+  { border: "border-sun-soft hover:border-sun", petal: "var(--petal-sun)", center: "var(--color-sun)" },
+  { border: "border-leaf-soft hover:border-leaf", petal: "var(--petal-leaf)", center: "var(--color-leaf)" },
+];
 
 export function LedgersPage() {
   const navigate = useNavigate();
@@ -22,10 +30,12 @@ export function LedgersPage() {
 
   return (
     <AppShell
+      title={uk.ledgers.title}
+      accent={uk.ledgers.accent}
       headerRight={
         <Button
           variant="ghost"
-          className="px-3 py-1.5"
+          className="px-3 py-1.5 text-on-accent hover:bg-on-accent/15 hover:text-on-accent"
           disabled={signOut.isPending}
           onClick={() => signOut.mutate(undefined, { onSuccess: () => void navigate("/signin") })}
         >
@@ -33,20 +43,18 @@ export function LedgersPage() {
         </Button>
       }
     >
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900">{uk.ledgers.title}</h1>
-
       {signOut.error ? (
-        <div className="mt-4">
+        <div className="mb-4">
           <FormError error={signOut.error} />
         </div>
       ) : null}
 
-      <Button className="mt-4 w-full" onClick={() => void navigate("/ledgers/new")}>
+      <Button className="w-full py-3 md:w-auto md:px-8" onClick={() => void navigate("/ledgers/new")}>
         <PlusIcon className="h-5 w-5" />
         {uk.ledgers.create}
       </Button>
 
-      {ledgers.isPending ? <p className="mt-6 text-slate-500">{uk.common.loading}</p> : null}
+      {ledgers.isPending ? <p className="mt-6 text-ink-soft">{uk.common.loading}</p> : null}
 
       {loadError ? (
         <div className="mt-6">
@@ -55,32 +63,34 @@ export function LedgersPage() {
       ) : null}
 
       {list && list.length === 0 ? (
-        <Card className="mt-6 flex flex-col items-center py-10 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-            <UsersIcon className="h-6 w-6" />
-          </span>
-          <p className="mt-3 text-slate-500">{uk.ledgers.empty}</p>
+        <Card className="mt-6 py-8 text-center md:max-w-md" tone="sun">
+          <Sprig className="mx-auto h-10 w-32" />
+          <p className="mt-3 text-ink-soft">{uk.ledgers.empty}</p>
         </Card>
       ) : null}
 
       {list && list.length > 0 ? (
-        <ul className="mt-6 space-y-2">
-          {list.map((ledger) => (
-            <li key={ledger.id}>
-              <Link
-                to={`/ledgers/${ledger.id}`}
-                className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-emerald-300 hover:shadow"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-slate-900">{ledger.name}</p>
-                  <div className="mt-1.5">
-                    <StateChip state={ledger.state} />
+        <ul className="mt-6 grid gap-3 md:mt-8 md:grid-cols-2 md:gap-5 lg:grid-cols-3">
+          {list.map((ledger, i) => {
+            const color = CARD_COLORS[i % CARD_COLORS.length];
+            return (
+              <li key={ledger.id}>
+                <Link
+                  to={`/ledgers/${ledger.id}`}
+                  className={`flex h-full items-center gap-3 rounded-[28px] border-2 bg-paper p-4 transition hover:-translate-y-0.5 md:p-5 ${color.border}`}
+                >
+                  <Flower petal={color.petal} center={color.center} className="h-11 w-11 shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-lg font-bold text-ink">{ledger.name}</p>
+                    <div className="mt-1">
+                      <StateChip state={ledger.state} />
+                    </div>
                   </div>
-                </div>
-                <ChevronRightIcon className="h-5 w-5 shrink-0 text-slate-400" />
-              </Link>
-            </li>
-          ))}
+                  <ChevronRightIcon className="h-5 w-5 shrink-0 text-ink-soft" />
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       ) : null}
     </AppShell>

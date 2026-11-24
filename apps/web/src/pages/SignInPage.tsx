@@ -13,6 +13,7 @@ export function SignInPage() {
     <AppShell>
       <AuthForm
         title={uk.auth.signInTitle}
+        accent={uk.auth.signInAccent}
         submitLabel={uk.auth.signInButton}
         pending={signIn.isPending}
         error={signIn.error}
@@ -20,7 +21,7 @@ export function SignInPage() {
         limits={{}}
         onSubmit={(credentials) => signIn.mutate(credentials, { onSuccess: () => void navigate("/ledgers") })}
         footer={
-          <Link to="/signup" className="font-medium text-emerald-700 hover:underline">
+          <Link to="/signup" className="font-semibold text-pink-deep hover:underline">
             {uk.auth.toSignUp}
           </Link>
         }

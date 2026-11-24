@@ -39,3 +39,5 @@ export const apiGet = <T>(path: string, schema: ZodType<T>): Promise<T> => reque
 
 export const apiPost = <T>(path: string, body?: unknown, schema?: ZodType<T>): Promise<T> =>
   request("POST", path, body, schema);
+
+export const apiPut = <T>(path: string, body: unknown, schema: ZodType<T>): Promise<T> => request("PUT", path, body, schema);

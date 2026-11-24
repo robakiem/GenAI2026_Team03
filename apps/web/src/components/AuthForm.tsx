@@ -15,6 +15,7 @@ interface Credentials {
 
 interface Props {
   title: string;
+  accent?: string;
   submitLabel: string;
   pending: boolean;
   error: unknown;
@@ -26,7 +27,7 @@ interface Props {
   footer: ReactNode;
 }
 
-export function AuthForm({ title, submitLabel, pending, error, schema, limits, passwordHint, onSubmit, footer }: Props) {
+export function AuthForm({ title, accent, submitLabel, pending, error, schema, limits, passwordHint, onSubmit, footer }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { errors, validate, bannerError } = useFieldErrors(limits, error);
@@ -39,8 +40,11 @@ export function AuthForm({ title, submitLabel, pending, error, schema, limits, p
 
   return (
     <div className="mx-auto max-w-sm">
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900">{title}</h1>
-      <Card className="mt-5">
+      <h1 className="text-3xl font-extrabold tracking-tight text-ink">
+        {title}
+        {accent ? <span className="accent text-pink"> {accent}</span> : null}
+      </h1>
+      <Card className="mt-5" tone="pink">
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <TextField
             id="email"
@@ -71,7 +75,7 @@ export function AuthForm({ title, submitLabel, pending, error, schema, limits, p
           </Button>
         </form>
       </Card>
-      <div className="mt-4 text-center text-sm text-slate-600">{footer}</div>
+      <div className="mt-4 text-center text-sm text-ink-soft">{footer}</div>
     </div>
   );
 }

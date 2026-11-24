@@ -1,13 +1,139 @@
 @import "tailwindcss";
 
+/* Babki palette: cream paper, raspberry pink, sky blue, leaf green, sunny yellow. */
+@theme {
+  --color-cream: #fff6e6;
+  --color-paper: #fffbf3;
+  --color-line: #ecdcc0;
+  --color-ink: #26203b;
+  --color-ink-soft: #6c6580;
+  --color-pink: #e94f7c;
+  --color-pink-deep: #c9365f;
+  --color-pink-soft: #fbd3df;
+  --color-sky: #3a9fdb;
+  --color-sky-deep: #1f7fbb;
+  --color-sky-soft: #cfe8f7;
+  --color-leaf: #6fb83a;
+  --color-leaf-deep: #4f8f22;
+  --color-leaf-soft: #ddf0c9;
+  --color-sun: #f5c02e;
+  --color-sun-deep: #b98a00;
+  --color-sun-soft: #fcecb3;
+  --color-danger: #d23c3c;
+  --color-danger-soft: #fde3df;
+  /* Text and icons that sit on a coloured surface (buttons, the header band). */
+  --color-on-accent: #fffbf3;
+
+  --font-sans: "Rubik", ui-sans-serif, system-ui, sans-serif;
+  --font-accent: "Playfair Display", ui-serif, Georgia, serif;
+}
+
+/* Petal colours of the decorations; light on every theme so flowers stay visible on the header band. */
+:root {
+  --petal-light: #fff6e6;
+  --petal-pink: #fbd3df;
+  --petal-sun: #fcecb3;
+  --petal-sky: #cfe8f7;
+  --petal-leaf: #ddf0c9;
+}
+
+/* Theme "Глина": wine, sage and mustard on warm cream. The token names keep their
+   roles: "pink" is the main accent, "sky" the second one, and so on. */
+:root[data-theme="clay"] {
+  --color-cream: #f3ead6;
+  --color-paper: #fbf6ea;
+  --color-line: #e2d3b6;
+  --color-ink: #3a2622;
+  --color-ink-soft: #7a6458;
+  --color-pink: #7d2f3c;
+  --color-pink-deep: #5c1f2a;
+  --color-pink-soft: #f0d6d0;
+  --color-sky: #7a9a6c;
+  --color-sky-deep: #4f6b44;
+  --color-sky-soft: #dfe8d5;
+  --color-leaf: #5b8a4f;
+  --color-leaf-deep: #3d6234;
+  --color-leaf-soft: #e1ead3;
+  --color-sun: #d9a933;
+  --color-sun-deep: #86610f;
+  --color-sun-soft: #f5e5ba;
+  --color-danger: #b3402f;
+  --color-danger-soft: #f6dcd5;
+  --color-on-accent: #fbf6ea;
+  --petal-light: #fbf6ea;
+  --petal-pink: #e8a798;
+  --petal-sun: #f1d27e;
+  --petal-sky: #cbdcbf;
+  --petal-leaf: #d5e4c4;
+}
+
+/* Theme "Нічний сад": a dark garden with coral, teal and lemon. "…-deep" colours are light here,
+   because they are used as text on dark "…-soft" backgrounds. */
+:root[data-theme="night"] {
+  color-scheme: dark;
+  --color-cream: #17142a;
+  --color-paper: #221e3a;
+  --color-line: #383158;
+  --color-ink: #f5effc;
+  --color-ink-soft: #aaa2c8;
+  --color-pink: #ff6f91;
+  --color-pink-deep: #ffa3b8;
+  --color-pink-soft: #43233f;
+  --color-sky: #36c2b4;
+  --color-sky-deep: #86e6dc;
+  --color-sky-soft: #183c42;
+  --color-leaf: #8bd45a;
+  --color-leaf-deep: #bdee9b;
+  --color-leaf-soft: #233a22;
+  --color-sun: #ffcf4d;
+  --color-sun-deep: #ffe395;
+  --color-sun-soft: #3c3420;
+  --color-danger: #ff8080;
+  --color-danger-soft: #42202c;
+  --color-on-accent: #1b1730;
+  --petal-light: #fff3d6;
+  --petal-pink: #ffc4d2;
+  --petal-sun: #ffe395;
+  --petal-sky: #aef1ea;
+  --petal-leaf: #cdf3ae;
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
   }
   body {
-    background-color: #f8fafc; /* slate-50 */
-    color: #0f172a; /* slate-900 */
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+}
+
+@layer components {
+  /* The italic serif word inside a bold heading: "Підсумок *поїздки*". */
+  .accent {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  /* A row of half-circles hanging under a coloured band (the "scalloped" edge). */
+  .scallop-bottom {
+    --scallop: 22px;
+    position: relative;
+  }
+  .scallop-bottom::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--scallop) * -1 + 1px);
+    height: var(--scallop);
+    background: radial-gradient(circle at 50% 0, var(--scallop-color) calc(var(--scallop) - 0.5px), transparent var(--scallop))
+      0 0 / calc(var(--scallop) * 2) var(--scallop) repeat-x;
+    pointer-events: none;
   }
 }

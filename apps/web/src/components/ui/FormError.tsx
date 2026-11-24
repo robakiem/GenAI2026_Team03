@@ -4,7 +4,7 @@ import { messageForError } from "../../i18n/errorText";
 export function FormError({ error }: { error: unknown }) {
   if (!error) return null;
   return (
-    <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
+    <p role="alert" className="rounded-2xl border-2 border-danger/30 bg-danger-soft px-4 py-2.5 text-sm font-medium text-danger">
       {messageForError(error)}
     </p>
   );
