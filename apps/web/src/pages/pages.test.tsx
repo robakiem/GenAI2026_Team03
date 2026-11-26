@@ -124,7 +124,10 @@ describe("Expense form (US-016 … US-020-b)", () => {
     mount();
     await amount();
     await submit();
-    expect(screen.getByText(uk.fieldErrors.required)).toBeInTheDocument();
+    // the empty title and the empty amount are both reported at once, each as "fill in"
+    expect(screen.getByLabelText(uk.expenseForm.amountLabel)).toBeInvalid();
+    expect(screen.getByLabelText(uk.expenseForm.titleLabel)).toBeInvalid();
+    expect(screen.getAllByText(uk.fieldErrors.required)).toHaveLength(2);
     await expectNothingSent(api, "POST");
   });
 
