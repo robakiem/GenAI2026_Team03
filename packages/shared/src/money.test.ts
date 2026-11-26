@@ -37,7 +37,7 @@ describe("parsePercent (US-020-b, BR-08)", () => {
     ["33.33", 3333],
     ["0.01", 1],
     ["100", 10_000],
-  ])("accepts %s %% as %i bp", (text, bp) => {
+  ])("accepts %s per cent as %i bp", (text, bp) => {
     expect(parsePercent(text)).toEqual({ ok: true, value: bp });
   });
 

@@ -1,10 +1,14 @@
 import type { InputHTMLAttributes } from "react";
 
 // The look of an input and of its note, shared by TextField and inline fields (the member name),
-// so a field error looks and reads the same everywhere.
-export function fieldInputClass(error: string | undefined): string {
+// so a field error looks and reads the same everywhere. "compact" is the narrow share input next to
+// a member's name; size classes are never combined, because Tailwind, not the class order, decides
+// which of two widths wins.
+const SIZE = { full: "w-full px-4 py-2.5", compact: "w-24 px-2.5 py-1.5" } as const;
+
+export function fieldInputClass(error: string | undefined, size: keyof typeof SIZE = "full"): string {
   return (
-    "w-full min-w-0 rounded-2xl border-2 bg-paper px-4 py-2.5 text-ink outline-none transition " +
+    `${SIZE[size]} min-w-0 rounded-2xl border-2 bg-paper text-ink outline-none transition ` +
     "placeholder:text-ink-soft/60 focus:ring-4 " +
     (error ? "border-danger/60 focus:border-danger focus:ring-danger/15" : "border-line focus:border-pink focus:ring-pink/15")
   );

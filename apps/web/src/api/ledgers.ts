@@ -1,6 +1,7 @@
 import { ledgersListSchema, ledgerWithMembersSchema, memberCreatedSchema } from "@babki/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiGet, apiPost } from "./client";
+import { refreshLedger } from "./refresh";
 
 export function useLedgers() {
   return useQuery({
@@ -32,10 +33,7 @@ export function useAddMember(ledgerId: string) {
   return useMutation({
     mutationFn: (body: { name: string }) =>
       apiPost(`/api/ledgers/${ledgerId}/members`, body, memberCreatedSchema),
-    onSuccess: () => {
-      // Never show a stale member list (BR-26).
-      void queryClient.invalidateQueries({ queryKey: ["ledger", ledgerId] });
-      void queryClient.invalidateQueries({ queryKey: ["ledgers"] });
-    },
+    // A new member also gets a row in the balances: the old list must not be shown (BR-26).
+    onSuccess: () => refreshLedger(queryClient, ledgerId),
   });
 }

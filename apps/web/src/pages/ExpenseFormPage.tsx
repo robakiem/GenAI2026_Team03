@@ -33,6 +33,7 @@ import { uk } from "../i18n/uk";
 
 const MODES: SplitMode[] = ["EQUAL", "AMOUNTS", "PERCENTAGES"];
 const limits = { title: LIMITS.expenseTitle };
+const titleSchema = expenseBodySchema.pick({ title: true });
 
 // US-016 … US-020-b (new) and US-031 (edit) share one form.
 export function ExpenseFormPage() {
@@ -124,7 +125,9 @@ function ExpenseForm({ ledgerId, members, expense }: { ledgerId: string; members
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setShowErrors(true);
-    if (!amount.ok || !split || !outcome?.ok) return;
+    // Every field error at once: the title is checked even while the amount or the split is wrong.
+    const titleOk = validate(titleSchema, { title }) !== null;
+    if (!titleOk || !amount.ok || !split || !outcome?.ok) return;
     const payload = { title, amountKopecks: amount.value, payerId, split };
     if (expense) {
       const body = validate(expenseBodySchema, payload);
@@ -282,7 +285,7 @@ function ExpenseForm({ ledgerId, members, expense }: { ledgerId: string; members
                               [member.id]: event.target.value,
                             }))
                           }
-                          className={`w-24 text-right ${fieldInputClass(inputError ? "x" : undefined)} px-2.5 py-1.5`}
+                          className={`text-right ${fieldInputClass(inputError ? "x" : undefined, "compact")}`}
                         />
                         <span className="w-4 text-sm font-semibold text-ink-soft">
                           {mode === "AMOUNTS" ? "₴" : "%"}

@@ -89,7 +89,7 @@ pnpm dev
 
 Що ще варто спробувати: відсотки 33.33 / 33.33 / 33.33 → «різниця 0.01 п.»; сума `1,50` → підказка про формат; обрізане посилання друга → «Посилання не знайдено».
 
-Автоматично все це перевіряє `pnpm check`: 153 тести, написані від критеріїв приймання до коду. Як ми тестуємо: [docs/testing-strategy.md](docs/testing-strategy.md).
+Автоматично все це перевіряє `pnpm check`: 160 тестів, написаних від критеріїв приймання до коду. Як ми тестуємо: [docs/testing-strategy.md](docs/testing-strategy.md); звіт про ручну перевірку й знайдені баги: [docs/testing-report.md](docs/testing-report.md).
 
 ---
 
@@ -122,3 +122,4 @@ pnpm dev
 | **6** | **Тестування з ШІ** | | |
 | 6.1 | Тести від критеріїв приймання до коду (red → green, перевірка мутаціями), зріз «Витрати, підсумок, сторінка друга», новий візуальний стиль | [6.1_tests_from_requirements.md](prompts/6.1_tests_from_requirements.md) | [6.1_RESULT.md](prompts/prompts%20results/6.1_RESULT.md), код у `apps/` і `packages/` |
 | 6.2 | Тестова стратегія проєкту | [6.2_testing_strategy.md](prompts/6.2_testing_strategy.md) | [docs/testing-strategy.md](docs/testing-strategy.md) |
+| 6.3 | Аудит покриття, ручний чекліст на 360 px, виправлення 3 багів (спершу тест), рефлексія про помилки ШІ в тестах | [6.3_test_audit_and_bug_hunt.md](prompts/6.3_test_audit_and_bug_hunt.md) | [docs/testing-report.md](docs/testing-report.md), код у `apps/web` |

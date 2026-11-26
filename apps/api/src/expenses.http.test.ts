@@ -205,10 +205,14 @@ describe("Expenses, settlement and the member page over HTTP (EP-10, EP-11 … E
     expect(page.member.name).toBe("Iryna");
   });
 
-  it("An unknown link shows a neutral message", async () => {
-    const res = await request(app).get("/api/links/never-issued");
+  // The token must belong to a real ledger, or "no ledger name in the answer" proves nothing.
+  it.each([
+    ["a text that was never issued", () => "never-issued"],
+    ["a valid link with its last character removed", (token: string) => token.slice(0, -1)],
+  ])("An unknown link shows a neutral message: %s", async (name, broken) => {
+    const { members } = await setUp(`${name.replaceAll(" ", "-")}@example.com`);
+    const res = await request(app).get(`/api/links/${broken(members.max.linkToken)}`);
     expect(res.status).toBe(404);
-    expect(errorOf(res).code).toBe("LINK_NOT_FOUND");
-    expect(JSON.stringify(res.body)).not.toContain("Carpathians");
+    expect(res.body).toEqual({ error: { code: "LINK_NOT_FOUND", message: "Link not found." } });
   });
 });

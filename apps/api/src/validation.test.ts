@@ -26,11 +26,10 @@ describe("ledger name validation (US-004)", () => {
   });
 
   it("A blank or too long name is refused", () => {
-    for (const value of ["", "   ", name(61)]) {
+    for (const [value, code] of [["", "TOO_SHORT"], ["   ", "TOO_SHORT"], [name(61), "TOO_LONG"]]) {
       const error = catchError(() => parseBody(createLedgerSchema, { name: value, coordinatorName: "Olia" }));
       expect(error.code).toBe("VALIDATION_ERROR");
-      expect(error.details?.[0]?.field).toBe("name");
-      expect(["TOO_SHORT", "TOO_LONG"]).toContain(error.details?.[0]?.code);
+      expect(error.details).toEqual([expect.objectContaining({ field: "name", code })]);
     }
   });
 });

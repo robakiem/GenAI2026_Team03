@@ -7,8 +7,9 @@ import {
   type CreateExpenseBody,
   type ExpenseBody,
 } from "@babki/shared";
-import { useMutation, useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiGet, apiPost, apiPut } from "./client";
+import { refreshLedger } from "./refresh";
 
 export function useExpenses(ledgerId: string) {
   return useQuery({
@@ -26,19 +27,11 @@ export function useSettlement(ledgerId: string) {
   });
 }
 
-// Every change refreshes the ledger, its expenses, balances and transfers: a stale list is never shown (BR-26).
-function invalidateLedger(queryClient: QueryClient, ledgerId: string) {
-  for (const key of ["ledger", "expenses", "settlement"]) {
-    void queryClient.invalidateQueries({ queryKey: [key, ledgerId] });
-  }
-  void queryClient.invalidateQueries({ queryKey: ["ledgers"] });
-}
-
 export function useAddExpense(ledgerId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: CreateExpenseBody) => apiPost(`/api/ledgers/${ledgerId}/expenses`, body, expenseResponseSchema),
-    onSuccess: () => invalidateLedger(queryClient, ledgerId),
+    onSuccess: () => refreshLedger(queryClient, ledgerId),
   });
 }
 
@@ -47,7 +40,7 @@ export function useEditExpense(ledgerId: string, expenseId: string) {
   return useMutation({
     mutationFn: (body: ExpenseBody) =>
       apiPut(`/api/ledgers/${ledgerId}/expenses/${expenseId}`, body, expenseResponseSchema),
-    onSuccess: () => invalidateLedger(queryClient, ledgerId),
+    onSuccess: () => refreshLedger(queryClient, ledgerId),
   });
 }
 
@@ -56,7 +49,7 @@ export function useSetPaymentDetails(ledgerId: string, memberId: string) {
   return useMutation({
     mutationFn: (paymentDetails: string | null) =>
       apiPut(`/api/ledgers/${ledgerId}/members/${memberId}/payment-details`, { paymentDetails }, memberCreatedSchema),
-    onSuccess: () => invalidateLedger(queryClient, ledgerId),
+    onSuccess: () => refreshLedger(queryClient, ledgerId),
   });
 }
 

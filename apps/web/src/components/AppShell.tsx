@@ -28,7 +28,8 @@ export function AppShell({ children, headerRight, back, title, accent, subtitle,
       <header className="scallop-bottom text-on-accent" style={style}>
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <Flower className="absolute -right-3 top-12 h-16 w-16 rotate-12 opacity-90" />
-          <Flower petal="var(--petal-pink)" center="var(--color-pink)" className="absolute right-14 top-3 h-7 w-7" />
+          {/* Sits in the row of the theme switch and "Вийти": only where that row is narrower than the screen. */}
+          <Flower petal="var(--petal-pink)" center="var(--color-pink)" className="absolute right-14 top-3 hidden h-7 w-7 xl:block" />
           <Tulip petal="var(--color-sun)" className="absolute -left-2 bottom-0 h-20 w-12 -rotate-12 opacity-90 md:left-[6%] md:h-32 md:w-20" />
           <Flower petal="var(--petal-sun)" center="var(--color-pink)" className="absolute right-[22%] top-20 hidden h-12 w-12 -rotate-12 md:block" />
           <Flower petal="var(--petal-light)" center="var(--color-sky)" className="absolute right-[34%] top-6 hidden h-6 w-6 md:block" />
