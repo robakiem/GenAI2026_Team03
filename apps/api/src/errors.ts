@@ -30,6 +30,11 @@ function isBodyParseError(err: unknown): boolean {
   return typeof err === "object" && err !== null && "type" in err && err.type === "entity.parse.failed";
 }
 
+// body-parser refuses a body above its limit with type "entity.too.large": the client's fault, not a 500.
+function isBodyTooLargeError(err: unknown): boolean {
+  return typeof err === "object" && err !== null && "type" in err && err.type === "entity.too.large";
+}
+
 // Express 4 arguments are required for Express to recognise an error handler
 export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   if (err instanceof AppError) {
@@ -38,6 +43,10 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   }
   if (isBodyParseError(err)) {
     res.status(ERROR_STATUS.MALFORMED_JSON).json(toResponse("MALFORMED_JSON", "Request body is not valid JSON."));
+    return;
+  }
+  if (isBodyTooLargeError(err)) {
+    res.status(ERROR_STATUS.VALIDATION_ERROR).json(toResponse("VALIDATION_ERROR", "Request body is too large."));
     return;
   }
   console.error(err);

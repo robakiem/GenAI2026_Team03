@@ -14,6 +14,8 @@ export interface AppDeps {
 
 export function createApp({ pingDatabase, prisma }: AppDeps) {
   const app = express();
+  // Do not announce the framework in every response.
+  app.disable("x-powered-by");
   // Honour X-Forwarded-Proto from one TLS-terminating proxy so req.secure is correct and the
   // session cookie gets its Secure attribute over HTTPS (ADR-0005). Trusting a single hop, not
   // every X-Forwarded-* entry, keeps req.ip from being chosen by the client. Locally there is no
